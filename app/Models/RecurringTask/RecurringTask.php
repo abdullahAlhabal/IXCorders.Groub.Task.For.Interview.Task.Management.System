@@ -8,17 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class RecurringTask extends Model
 {
     use HasFactory;
-
-
-    /**
-    title
-    short_description
-    long_description
-    frequency
-    start_date
-    end_date
-    created_by
-     */
     protected $fillable = [
         'title',
         'short_description',
