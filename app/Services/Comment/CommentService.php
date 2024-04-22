@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\Comment\CommentRepositoryInterface;
 use App\Contracts\Comment\CommentServiceInterface;
 use App\Models\Comment;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class CommentService implements CommentServiceInterface
@@ -24,6 +25,25 @@ class CommentService implements CommentServiceInterface
     public function getAllComments(): Collection
     {
         return $this->commentRepository->getAll();
+    }
+    public function paginate(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->commentRepository->paginate($perPage);
+    }
+
+    public function orderBy(string $column, string $direction = 'asc'): Collection
+    {
+        return $this->commentRepository->orderBy($column, $direction);
+    }
+
+    public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->commentRepository->paginateOrderedBy($column, $direction, $perPage);
+    }
+
+    public function where(string $column, $value): Collection
+    {
+        return $this->commentRepository->where($column, $value);
     }
 
     public function addComment(Comment $comment): void

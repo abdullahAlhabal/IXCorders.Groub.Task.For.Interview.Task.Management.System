@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\Task\TaskRepositoryInterface;
 use App\Contracts\Task\TaskServiceInterface;
 use App\Models\Task;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class TaskService implements TaskServiceInterface
@@ -24,6 +25,25 @@ class TaskService implements TaskServiceInterface
     public function getAllTasks(): Collection
     {
         return $this->taskRepository->getAll();
+    }
+    public function paginate(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->taskRepository->paginate($perPage);
+    }
+
+    public function orderBy(string $column, string $direction = 'asc'): Collection
+    {
+        return $this->taskRepository->orderBy($column, $direction);
+    }
+
+    public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->taskRepository->paginateOrderedBy($column, $direction, $perPage);
+    }
+
+    public function where(string $column, $value): Collection
+    {
+        return $this->taskRepository->where($column, $value);
     }
 
     public function addTask(Task $task): void

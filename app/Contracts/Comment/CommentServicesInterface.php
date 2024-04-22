@@ -3,6 +3,7 @@
 namespace App\Contracts\Comment;
 
 use App\Models\Comment;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface CommentServiceInterface
@@ -13,4 +14,9 @@ interface CommentServiceInterface
     public function updateComment(Comment $comment): void;
     public function deleteComment(Comment $comment): void;
     public function saveComment(Comment $comment): void;
+    public function paginate(int $perPage = 10): LengthAwarePaginator;
+    public function orderBy(string $column, string $direction = 'asc'): Collection;
+    public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator;
+    public function where(string $column, $value): Collection;
+
 }

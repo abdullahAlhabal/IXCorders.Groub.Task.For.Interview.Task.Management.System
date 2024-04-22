@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Contracts\RecurringTask\RecurringTaskServiceInterface;
 use App\Models\RecurringTask;
-use Illuminate\Support\Collection;
 use App\Http\Requests\Web\RecurringTask\StoreRecurringTaskRequest;
 use App\Http\Requests\Web\RecurringTask\UpdateRecurringTaskRequest;
 use Illuminate\Log\Logger;
@@ -15,15 +14,15 @@ use Illuminate\Support\Facades\DB; // Import the DB facade for transactions
 class RecurringTaskController extends Controller
 {
     // Members
-    private RecurringTaskServiceInterface $taskService;
+    private RecurringTaskServiceInterface $recurringTaskService;
     private Logger $logger;
 
     // End Members
 
     // Constructor
-    public function __construct(RecurringTaskServiceInterface $taskService, Logger $logger)
+    public function __construct(RecurringTaskServiceInterface $recurringTaskService, Logger $logger)
     {
-        $this->taskService = $taskService;
+        $this->recurringTaskService = $recurringTaskService;
         $this->logger = $logger;
     }
     // End Constructor
@@ -34,7 +33,7 @@ class RecurringTaskController extends Controller
     {
         try {
             // Get all tasks
-            $tasks = $this->taskService->getAllTasks();
+            $tasks = $this->recurringTaskService->getAllTasks();
 
             // Log successful retrieval (optional)
             $this->logger->info('Retrieved all tasks successfully');
@@ -54,7 +53,7 @@ class RecurringTaskController extends Controller
     {
         try {
             // Get a specific task by ID
-            $task = $this->taskService->getTaskById($taskId);
+            $task = $this->recurringTaskService->getTaskById($taskId); // I found that if i change the name to findTaskById() is more clarity. no worries for now
 
             if (!$task) {
                 // Task not found
@@ -96,7 +95,7 @@ class RecurringTaskController extends Controller
             ]);
 
             // Add the task to the database
-            $this->taskService->addTask($task);
+            $this->recurringTaskService->addTask($task);
 
             // Commit the transaction
             DB::commit();
@@ -122,7 +121,7 @@ class RecurringTaskController extends Controller
             DB::beginTransaction();
 
             // Get a specific task by ID
-            $task = $this->taskService->getTaskById($taskId);
+            $task = $this->recurringTaskService->getTaskById($taskId);
 
             if (!$task) {
                 // Task not found
@@ -139,7 +138,7 @@ class RecurringTaskController extends Controller
             $task->created_by = $request->input('created_by');
 
             // Save the updated task
-            $this->taskService->updateTask($task);
+            $this->recurringTaskService->updateTask($task);
 
             // Commit the transaction
             DB::commit();
@@ -165,7 +164,7 @@ class RecurringTaskController extends Controller
             DB::beginTransaction();
 
             // Get a specific task by ID
-            $task = $this->taskService->getTaskById($taskId);
+            $task = $this->recurringTaskService->getTaskById($taskId);
 
             if (!$task) {
                 // Task not found
@@ -173,7 +172,7 @@ class RecurringTaskController extends Controller
             }
 
             // Delete the task
-            $this->taskService->deleteTask($task);
+            $this->recurringTaskService->deleteTask($task);
 
             // Commit the transaction
             DB::commit();
