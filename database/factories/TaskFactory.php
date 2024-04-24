@@ -25,12 +25,13 @@ class TaskFactory extends Factory
             'long_description' => $faker->text,
             'due_date' => $faker->dateTimeBetween('now', '+1 year'), // Due date within the next year
             'priority' => $faker->randomElement(['low', 'medium', 'high']),
-            'status_id' => TaskStatus::inRandomOrder()->first()->id,
+            // 'status_id' => TaskStatus::inRandomOrder()->first()->id,
             'status' => $faker->randomElement(['To Do', 'In Progress', 'Done']),
             'created_by' => User::inRandomOrder()->first()->id,
             'assigned_to' => User::inRandomOrder()->first()->id,
             'is_recurring' => $faker->boolean,
-            'recurring_task_id' => null, // Adjust as needed based on your logic
+            'recurring_pattern' => $faker->randomElement(['daily', 'weekly', 'monthly']),
+            'recurring_interval' => $faker->numberBetween(1, 30)
         ];
     }
 }

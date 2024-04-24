@@ -4,7 +4,7 @@ namespace App\Http\Requests\Web\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTaskRequest extends FormRequest
+class CreateTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,12 +27,11 @@ class StoreTaskRequest extends FormRequest
             'long_description' => 'nullable|string',
             'due_date' => 'required|date',
             'priority' => 'required|in:low,medium,high',
-            'status_id' => 'nullable|exists:task_statuses,id',
+            'assigned_to'   => 'nullable|exists:users,id',
             'status' => 'required|in:To Do,In Progress,Done',
-            'created_by' => 'required|exists:users,id',
-            'assigned_to' => 'nullable|exists:users,id',
-            'is_recurring' => 'boolean',
-            'recurring_task_id' => 'nullable|exists:recurring_tasks,id',
+            'is_recurring' => 'nullable|boolean',
+            'recurring_pattern' => 'nullable|in:daily,weekly,monthly',
+            'recurring_interval' => 'nullable|integer'
         ];
     }
 }

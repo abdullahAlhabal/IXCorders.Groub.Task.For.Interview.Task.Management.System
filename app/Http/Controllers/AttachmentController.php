@@ -8,6 +8,8 @@ use App\Http\Requests\Web\Attachment\StoreAttachmentRequest;
 use App\Http\Requests\Web\Attachment\UpdateAttachmentRequest;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
 
 class AttachmentController extends Controller
 {    // Members
@@ -26,9 +28,12 @@ class AttachmentController extends Controller
 
     // Methods
 
-    public function index()
+    public function index(Request $request)
     {
         try {
+
+            $perPage = $request->query('perPage', 10);
+
             // Get all attachments
             $attachmentss = $this->attachmentService->getAllAttachments();
 

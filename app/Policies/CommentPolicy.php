@@ -13,7 +13,7 @@ class CommentPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class CommentPolicy
      */
     public function view(User $user, Comment $comment): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class CommentPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -37,7 +37,7 @@ class CommentPolicy
      */
     public function update(User $user, Comment $comment): bool
     {
-        //
+        return $user->id === $comment->written_by;
     }
 
     /**
@@ -45,22 +45,22 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment): bool
     {
-        //
+        return $user->id === $comment->written_by;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Comment $comment): bool
-    {
-        //
-    }
+    // /**
+    //  * Determine whether the user can restore the model.
+    //  */
+    // public function restore(User $user, Comment $comment): bool
+    // {
+    //     //
+    // }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Comment $comment): bool
-    {
-        //
-    }
+    // /**
+    //  * Determine whether the user can permanently delete the model.
+    //  */
+    // public function forceDelete(User $user, Comment $comment): bool
+    // {
+    //     //
+    // }
 }

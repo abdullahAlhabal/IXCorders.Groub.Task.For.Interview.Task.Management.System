@@ -18,13 +18,15 @@ return new class extends Migration
             $table->text('long_description')->nullable();
             $table->dateTime('due_date');
             $table->enum('priority', ['low', 'medium', 'high']);
-            $table->foreignId('status_id')->nullable()->constrained("task_statuses", "id")->cascadeOnDelete();
             $table->enum('status', ['To Do', 'In Progress', 'Done']);
             $table->foreignId('created_by')->constrained("users", "id")->cascadeOnDelete();
             $table->foreignId('assigned_to')->nullable()->constrained("users", "id")->cascadeOnDelete();
             $table->boolean('is_recurring')->default(false);
-            $table->foreignId('recurring_task_id')->nullable()->constrained("recurring_tasks", "id")->cascadeOnDelete();
+            $table->enum('recurring_pattern', ['daily', 'weekly', 'monthly'])->nullable();
+            $table->unsignedInteger('recurring_interval')->nullable();
             $table->timestamps();
+
+            $table->index(['user_id', 'short_description', 'due_date', 'created_by', 'assigned_to', 'recurring_pattern', 'status']);
         });
     }
 

@@ -30,12 +30,12 @@ class UpdateTaskRequest extends FormRequest
                 'long_description' => 'nullable|string',
                 'due_date' => 'required|date',
                 'priority' => 'required|in:low,medium,high',
-                'status_id' => 'nullable|exists:task_statuses,id',
+                // 'status_id' => 'nullable|exists:task_statuses,id',
                 'status' => 'required|in:To Do,In Progress,Done',
-                'created_by' => 'required|exists:users,id',
-                'assigned_to' => 'nullable|exists:users,id',
+                'assigned_to'   => 'nullable|exists:users,id',
                 'is_recurring' => 'boolean',
-                'recurring_task_id' => 'nullable|exists:recurring_tasks,id',
+                'recurring_pattern' => 'nullable|in:daily,weekly,monthly',
+                'recurring_interval' => 'nullable|integer'
             ];
         } elseif ($method === "PATCH") {
             return [
@@ -44,12 +44,12 @@ class UpdateTaskRequest extends FormRequest
                 'long_description' => 'sometimes|nullable|string',
                 'due_date' => 'sometimes|required|date',
                 'priority' => 'sometimes|required|in:low,medium,high',
-                'status_id' => 'sometimes|nullable|exists:task_statuses,id',
+                // 'status_id' => 'sometimes|nullable|exists:task_statuses,id',
                 'status' => 'sometimes|required|in:To Do,In Progress,Done',
-                'created_by' => 'sometimes|required|exists:users,id',
-                'assigned_to' => 'sometimes|nullable|exists:users,id',
+                'assigned_to'   => 'nullable|exists:users,id',
                 'is_recurring' => 'sometimes|boolean',
-                'recurring_task_id' => 'sometimes|nullable|exists:recurring_tasks,id',
+                'recurring_pattern' => 'sometimes|nullable|in:daily,weekly,monthly',
+                'recurring_interval' => 'sometimes|nullable|integer'
             ];
         }
     }

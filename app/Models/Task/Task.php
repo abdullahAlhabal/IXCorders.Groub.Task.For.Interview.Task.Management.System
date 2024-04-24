@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\TaskStatus;
+// use App\Models\TaskStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,13 +19,17 @@ class Task extends Model
         'long_description',
         'due_date',
         'priority',
-        'status_id',
+        // 'status_id',
         'status',
         'created_by',
         'assigned_to',
         'is_recurring',
-        'recurring_task_id',
+        'recurring_pattern',
+        'recurring_interval'
     ];
+
+    protected $guarded = ['created_at', 'updated_at', 'id'];
+
 
     // Relationships
     public function creator()
@@ -38,9 +42,18 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    public function status()
+    // public function status()
+    // {
+    //     return $this->belongsTo(TaskStatus::class, 'status_id');
+    // }
+    public function comments()
     {
-        return $this->belongsTo(TaskStatus::class, 'status_id');
+        return $this->hasMany(Comment::class);
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class);
     }
 
     // Custom methods

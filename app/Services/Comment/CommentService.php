@@ -65,4 +65,8 @@ class CommentService implements CommentServiceInterface
     {
         $this->commentRepository->save($comment);
     }
+    public function getAllCommentsPaginated(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->commentRepository->getAllCommentsPaginated($perPage);
+    }
 }

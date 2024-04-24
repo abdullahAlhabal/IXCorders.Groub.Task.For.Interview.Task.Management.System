@@ -13,7 +13,7 @@ class AttachmentPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class AttachmentPolicy
      */
     public function view(User $user, Attachment $attachment): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class AttachmentPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -37,7 +37,7 @@ class AttachmentPolicy
      */
     public function update(User $user, Attachment $attachment): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -45,22 +45,22 @@ class AttachmentPolicy
      */
     public function delete(User $user, Attachment $attachment): bool
     {
-        //
+        return $user->id === $attachment->attached_by;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Attachment $attachment): bool
-    {
-        //
-    }
+    // /**
+    //  * Determine whether the user can restore the model.
+    //  */
+    // public function restore(User $user, Attachment $attachment): bool
+    // {
+    //     //
+    // }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Attachment $attachment): bool
-    {
-        //
-    }
+    // /**
+    //  * Determine whether the user can permanently delete the model.
+    //  */
+    // public function forceDelete(User $user, Attachment $attachment): bool
+    // {
+    //     //
+    // }
 }

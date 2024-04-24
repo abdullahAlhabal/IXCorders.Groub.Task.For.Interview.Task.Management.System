@@ -21,7 +21,18 @@ class TaskService implements TaskServiceInterface
     {
         return $this->taskRepository->getById($taskId);
     }
-
+    public function getTaskWithComments(int $taskId): ?Task
+    {
+        return $this->taskRepository->getTaskWithComments($taskId);
+    }
+    public function getTaskWithAttachments(int $taskId): ?Task
+    {
+        return $this->taskRepository->getTaskWithAttachments($taskId);
+    }
+    public function getTaskWithCommentsAndAttachments(int $taskId): ?Task
+    {
+        return $this->taskRepository->getTaskWithCommentsAndAttachments($taskId);
+    }
     public function getAllTasks(): Collection
     {
         return $this->taskRepository->getAll();
@@ -40,7 +51,16 @@ class TaskService implements TaskServiceInterface
     {
         return $this->taskRepository->paginateOrderedBy($column, $direction, $perPage);
     }
-
+    public function getAllTasksPaginated(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->taskRepository->getAllTasksPaginated($perPage);
+    }
+    public function getAllTasksChunked(): void
+    {
+        Task::chunk(100, function ($tasks) {
+            $tasks->load(['comments', 'attachments']);
+        });
+    }
     public function where(string $column, $value): Collection
     {
         return $this->taskRepository->where($column, $value);

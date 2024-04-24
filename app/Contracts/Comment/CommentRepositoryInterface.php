@@ -14,8 +14,10 @@ interface CommentRepositoryInterface
     public function update(Comment $comment): void;
     public function delete(Comment $comment): void;
     public function save(Comment $comment): void;
-    public function paginate(int $perPage = 10): LengthAwarePaginator;
     public function orderBy(string $column, string $direction = 'asc'): Collection;
-    public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator;
     public function where(string $column, $value): Collection;
+    public function paginate(int $perPage = 10): LengthAwarePaginator;
+    public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator;
+    public function getAllCommentsPaginated(int $perPage = 10): LengthAwarePaginator;
+    public function getAllCommentsByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator;
 }

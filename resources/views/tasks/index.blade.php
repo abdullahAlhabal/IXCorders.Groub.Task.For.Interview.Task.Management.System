@@ -1,12 +1,8 @@
-@extends("layouts.layout")
-
-@section("page_title", "Task List")
-
-@section("title", "Task List")
+@extends("layouts.app")
 
 @section("content")
         <nav class="mb-4">
-            <a href="{{ route('tasks.create') }}" @class(['text-decoration-under-line'])>Add task ➡️</a>
+            <a href="{{ route('tasks.create') }}"></a>
         </nav>
 
         <div class="card rounded-3">

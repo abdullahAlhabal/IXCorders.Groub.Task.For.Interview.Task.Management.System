@@ -11,14 +11,24 @@ class TaskRepository implements TaskRepositoryInterface
 {
     public function getById(int $taskId): ?Task
     {
-        return Task::find($taskId);
+        return Task::findOrFail($taskId);
     }
-
+    public function getTaskWithComments(int $taskId): ?Task
+    {
+        return Task::with(['comments'])->findOrFail($taskId);
+    }
+    public function getTaskWithAttachments(int $taskId): ?Task
+    {
+        return Task::with(['attachments'])->findOrFail($taskId);
+    }
+    public function getTaskWithCommentsAndAttachments(int $taskId): ?Task
+    {
+        return Task::with(['comments', 'attachments'])->findOrFail($taskId);
+    }
     public function getAll(): Collection
     {
         return Task::all();
     }
-
     public function paginate(int $perPage = 10): LengthAwarePaginator
     {
         return Task::paginate($perPage);
@@ -28,12 +38,14 @@ class TaskRepository implements TaskRepositoryInterface
     {
         return Task::orderBy($column, $direction)->get();
     }
-
     public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator
     {
         return Task::orderBy($column, $direction)->paginate($perPage);
     }
-
+    public function getAllTasksPaginated(int $perPage = 10): LengthAwarePaginator
+    {
+        return Task::with('comments', 'attachments')->paginate($perPage);
+    }
     public function where(string $column, $value): Collection
     {
         return Task::where($column, $value)->get();

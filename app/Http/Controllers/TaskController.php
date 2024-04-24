@@ -3,134 +3,237 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Task\TaskServiceInterface;
+use App\Contracts\User\UserServiceInterface;
 use App\Models\Task;
-use App\Http\Requests\Web\Task\StoreTaskRequest;
+use App\Http\Requests\Web\Task\CreateTaskRequest;
+use App\Http\Requests\Web\Task\AssignTaskRequest ;
 use App\Http\Requests\Web\Task\UpdateTaskRequest;
+use App\Notifications\TaskAssignedNotification;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     // Members
     private TaskServiceInterface $taskService;
+    private UserServiceInterface $userService;
     private Logger $logger;
 
     // End Members
 
     // Constructor
-    public function __construct(TaskServiceInterface $taskService, Logger $logger)
+    public function __construct(TaskServiceInterface $taskService, UserServiceInterface $userService, Logger $logger)
     {
         $this->taskService = $taskService;
+        $this->userService = $userService;
         $this->logger = $logger;
     }
     // End Constructor
 
     // Methods
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            // Get all tasks
-            $tasks = $this->taskService->getAllTasks();
 
-            // Log successful retrieval (optional)
+            // Dispatch(new FetchTasksJob(app(TaskService::class)));
+
+            $perPage = $request->query('perPage', 10);
+
+            $tasks = $this->taskService->getAllTasksPaginated($perPage);
+
             $this->logger->info('Retrieved all tasks successfully');
 
-            // Render a view with the tasks
-            return view('tasks.index', ['tasks' => $tasks]);
+            return view('tasks.index', compact('tasks'));
+
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
+
             $this->logger->error('Error fetching tasks: ' . $e->getMessage());
 
-            // Return an error view (customize as needed)
-            return view('errors.500');
+            session()->flash('error', 'Error fetching tasks: ' . $e->getMessage());
+
+            return redirect()->route('dashboard')->withErrors(['error' => 'Error fetching tasks']);
+            // abort(500, 'Error fetching tasks');
         }
     }
 
     public function show(int $taskId)
     {
         try {
-            // Get a specific task by ID
-            $task = $this->taskService->getTaskById($taskId); // I found that if i change the name to findTaskById() is more clarity. no worries for now
+
+            if (is_null($taskId)) {
+                abort(400, 'Invalid task ID');
+            }
+
+            $task = $this->taskService->getTaskWithCommentsAndAttachments($taskId);
 
             if (!$task) {
-                // Task not found
+                session()->flash('error', 'Task not found.');
                 return abort(404, 'Task not found');
             }
 
-            // Map the retrieved data to a view model (if needed)
-            // For example:
-            // $model = new RecurringTaskModel($task);
+            if (! Gate::allows('view', $task)) {
+                session()->flash('error', 'Unauthorized to view this task.');
+                abort(403, 'Unauthorized');
+            }
 
-            // Return a view with the task details
-            return view('tasks.show', ['task' => $task]);
+            return view('tasks.show', compact($task));
+
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
-            // For example:
-            // Log::error('Error fetching task details: ' . $e->getMessage());
             $this->logger->error('Error fetching task details: ' . $e->getMessage());
 
-            // Return an error view
-            return view('errors.500'); // Customize the error view as needed
+            abort(500, 'Error fetching task');
         }
     }
 
-    public function store(StoreTaskRequest $request)
+    public function create()
     {
         try {
-            // Start a database transaction
-            DB::beginTransaction();
+            $users = $this->userService->getAllUsers();
 
-            // Create a new task from the request data
-            $task = new Task([
-                'title' => $request->input("title"),
-                'short_description' => $request->input("short_description"),
-                'long_description' => $request->input("long_description"),
-                'due_date' => $request->input("due_date"),
-                'priority' => $request->input("priority"),
-                'status_id' => $request->input("status_id"),
-                'status' => $request->input("status"),
-                'created_by' => $request->input("created_by"),
-                'assigned_to' => $request->input("assigned_to"),
-                'is_recurring' => $request->input("is_recurring"),
-                'recurring_task_id' => $request->input("recurring_task_id"),
-            ]);
+            return view('tasks.create', compact('users'));
 
-            // Add the task to the database
-            $this->taskService->addTask($task);
-
-            // Commit the transaction
-            DB::commit();
-
-            // Redirect to the index page (or any other appropriate page)
-            return redirect()->route('tasks.index');
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
-            $this->logger->error('Error creating task: ' . $e->getMessage());
 
-            // Roll back the transaction
-            DB::rollBack();
-
-            // Return an error view
-            return view('errors.500'); // Customize the error view as needed
+            $this->logger->error('Error fetching users for task creation: ' . $e->getMessage());
+            session()->flash('error', 'Error fetching users for task creation.');
+            return abort(500, 'Error fetching users');
         }
     }
 
-    public function update(UpdateTaskRequest $request, int $taskId)
+    public function store(CreateTaskRequest $request)
+    {
+      try {
+        DB::beginTransaction();
+
+        $task = new Task([
+          'title' => $request->input('title'),
+          'short_description' => $request->input('short_description'),
+          'long_description' => $request->input('long_description'),
+          'due_date' => $request->input('due_date'),
+          'priority' => $request->input('priority'),
+          'status_id' => $request->input('status_id'),
+          'status' => $request->input('status'),
+          'created_by' => Auth::id(),
+          'assigned_to' => $request->input('assigned_to') ?? Auth::id(),
+          'is_recurring' => $request->input('is_recurring'),
+          "recurring_pattern" => $request->input("recurring_pattern"),
+          "recurring_interval" => $request->input("recurring_interval")
+        ]);
+
+        $this->taskService->addTask($task);
+
+        session()->flash('success', 'Task created successfully!');
+
+        DB::commit();
+
+        return redirect()->route('tasks.index');
+      } catch (\Exception $e) {
+        $this->logger->error('Error creating task: ' . $e->getMessage());
+        DB::rollBack();
+        abort(500, 'Error creating task');
+      }
+    }
+
+    // TODO : For Further features, then we will have a button to assign exsisting tasks
+
+    // public function assign(AssignTaskRequest $request, int $taskId)
+    // {
+    //   try {
+    //     DB::beginTransaction();
+
+
+    //     if (is_null($taskId)) {
+    //         abort(400, 'Invalid task ID');
+    //     }
+
+    //     $task = $this->taskService->getTaskById($taskId);
+
+    //     if (!$task) {
+    //         return abort(404, 'Task not found');
+    //     }
+
+    //     if (! Gate::allows('assign', $task)) {
+    //         abort(403, 'Unauthorized');
+    //     }
+
+    //     $task->assigned_to = $request->input('assigned_to');
+
+    //     $this->taskService->saveTask($task);
+
+    //     // Dispatch the notification
+    //     $user = $this->userService->getUserById($request->input('assigned_to'));
+
+    //     $user->notify(new TaskAssignedNotification($task));
+
+    //     DB::commit();
+
+    //     session()->flash('success', 'Task assigned successfully!');
+
+    //     return redirect()->route('tasks.index');
+
+    //   } catch (\Exception $e) {
+
+    //     $this->logger->error('Error assigning task: ' . $e->getMessage());
+
+    //     DB::rollBack();
+
+    //     abort(500, 'Error assigning task');
+
+    //   }
+    // }
+
+    public function edit(int $taskId)
     {
         try {
-            // Start a database transaction
-            DB::beginTransaction();
+            if (is_null($taskId)) {
+                abort(400, 'Invalid task ID');
+            }
 
-            // Get a specific task by ID
             $task = $this->taskService->getTaskById($taskId);
 
             if (!$task) {
-                // Task not found
+                session()->flash('error', 'Task not found.');
                 return abort(404, 'Task not found');
             }
 
-            // Update task properties from the request data
+            if (! Gate::allows('update', $task)) {
+                abort(403, 'Unauthorized');
+            }
+
+            $users = $this->userService->getAllUsers();
+
+            return view('tasks.edit', compact('task', 'users'));
+
+        } catch (\Exception $e) {
+            $this->logger->error('Error fetching task for editing: ' . $e->getMessage());
+            session()->flash('error', 'Error fetching task for editing.');
+            return abort(500, 'Error fetching task');
+        }
+    }
+    public function update(UpdateTaskRequest $request, int $taskId)
+    {
+        try {
+            DB::beginTransaction();
+
+
+            if (is_null($taskId)) {
+                abort(400, 'Invalid task ID');
+            }
+
+            $task = $this->taskService->getTaskById($taskId);
+
+            if (!$task) {
+                return abort(404, 'Task not found');
+            }
+
+            if (! Gate::allows('update', $task)) {
+                abort(403, 'Unauthorized');
+            }
+
             $task->title = $request->input("title");
             $task->short_description = $request->input("short_description");
             $task->long_description = $request->input("long_description");
@@ -138,62 +241,61 @@ class TaskController extends Controller
             $task->priority = $request->input("priority");
             $task->status_id = $request->input("status_id");
             $task->status = $request->input("status");
-            $task->created_by = $request->input("created_by");
-            $task->assigned_to = $request->input("assigned_to");
+            $task->created_by = Auth::id();
+            $task->assigned_to = $request->input("assigned_to") ?? Auth::id() ;
             $task->is_recurring = $request->input("is_recurring");
-            $task->recurring_task_id = $request->input("recurring_task_id");
+            $task->recurring_pattern = $request->input("recurring_pattern");
+            $task->recurring_interval = $request->input("recurring_interval");
 
-            // Save the updated task
             $this->taskService->updateTask($task);
 
-            // Commit the transaction
             DB::commit();
 
-            // Redirect to the index page (or any other appropriate page)
+            session()->flash('success', 'Task updated successfully!');
+
             return redirect()->route('tasks.index');
+
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
             $this->logger->error('Error updating task: ' . $e->getMessage());
 
-            // Roll back the transaction
             DB::rollBack();
 
-            // Return an error view
-            return view('errors.500'); // Customize the error view as needed
+            abort(500, 'Error updating task');
         }
     }
-
     public function destroy(int $taskId)
     {
         try {
-            // Start a database transaction
             DB::beginTransaction();
 
-            // Get a specific task by ID
+            if (is_null($taskId)) {
+                abort(400, 'Invalid task ID');
+            }
+
             $task = $this->taskService->getTaskById($taskId);
 
             if (!$task) {
-                // Task not found
                 return abort(404, 'Task not found');
             }
 
-            // Delete the task
+            if (! Gate::allows('delete', $task)) {
+                abort(403, 'Unauthorized');
+            }
+
             $this->taskService->deleteTask($task);
 
-            // Commit the transaction
             DB::commit();
 
-            // Redirect to the index page (or any other appropriate page)
+            session()->flash('success', 'Task deleted successfully!');
+
             return redirect()->route('tasks.index');
+
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
             $this->logger->error('Error deleting task: ' . $e->getMessage());
 
-            // Roll back the transaction
             DB::rollBack();
 
-            // Return an error view
-            return view('errors.500'); // Customize the error view as needed
+            abort(500, 'Error deleting task');
         }
     }
 
