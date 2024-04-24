@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Contracts\UserRepositoryInterface;
+use App\Contracts\User\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;

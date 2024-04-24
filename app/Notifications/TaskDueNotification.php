@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Task;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,12 +12,15 @@ class TaskDueNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    private Task $task;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(Task $task)
     {
-        //
+        $this->task = $task;
+        $this->afterCommit();
     }
 
     /**
@@ -35,9 +39,9 @@ class TaskDueNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject('Task Due Reminder: ' . $this->task->title)
+            ->line('This is a reminder that the task "' . $this->task->title . '" is due on ' . $this->task->due_date->format('Y-m-d') . '.')
+            ->action('View Task', url('/tasks/' . $this->task->id));
     }
 
     /**
@@ -47,8 +51,6 @@ class TaskDueNotification extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

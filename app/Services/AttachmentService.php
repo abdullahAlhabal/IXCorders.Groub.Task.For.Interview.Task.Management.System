@@ -8,7 +8,7 @@ use App\Models\Attachment;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
-class AttachmentServices implements AttachmentServicesInterface
+class AttachmentService implements AttachmentServicesInterface
 {
     private AttachmentRepositoryInterface $attachmentRepository;
 

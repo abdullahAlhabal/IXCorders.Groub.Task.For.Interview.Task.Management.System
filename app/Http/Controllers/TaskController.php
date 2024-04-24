@@ -109,20 +109,7 @@ class TaskController extends Controller
       try {
         DB::beginTransaction();
 
-        $task = new Task([
-          'title' => $request->input('title'),
-          'short_description' => $request->input('short_description'),
-          'long_description' => $request->input('long_description'),
-          'due_date' => $request->input('due_date'),
-          'priority' => $request->input('priority'),
-          'status_id' => $request->input('status_id'),
-          'status' => $request->input('status'),
-          'created_by' => Auth::id(),
-          'assigned_to' => $request->input('assigned_to') ?? Auth::id(),
-          'is_recurring' => $request->input('is_recurring'),
-          "recurring_pattern" => $request->input("recurring_pattern"),
-          "recurring_interval" => $request->input("recurring_interval")
-        ]);
+        $task = $this->createTaskFromRequest($request);
 
         $this->taskService->addTask($task);
 
@@ -144,45 +131,21 @@ class TaskController extends Controller
     // {
     //   try {
     //     DB::beginTransaction();
-
-
-    //     if (is_null($taskId)) {
-    //         abort(400, 'Invalid task ID');
-    //     }
-
-    //     $task = $this->taskService->getTaskById($taskId);
-
-    //     if (!$task) {
-    //         return abort(404, 'Task not found');
-    //     }
-
+    //    $task = $this->fetchAuthorizedTask($taskId);
     //     if (! Gate::allows('assign', $task)) {
     //         abort(403, 'Unauthorized');
     //     }
-
     //     $task->assigned_to = $request->input('assigned_to');
-
     //     $this->taskService->saveTask($task);
-
-    //     // Dispatch the notification
     //     $user = $this->userService->getUserById($request->input('assigned_to'));
-
     //     $user->notify(new TaskAssignedNotification($task));
-
     //     DB::commit();
-
     //     session()->flash('success', 'Task assigned successfully!');
-
     //     return redirect()->route('tasks.index');
-
     //   } catch (\Exception $e) {
-
     //     $this->logger->error('Error assigning task: ' . $e->getMessage());
-
     //     DB::rollBack();
-
     //     abort(500, 'Error assigning task');
-
     //   }
     // }
 
@@ -210,7 +173,9 @@ class TaskController extends Controller
 
         } catch (\Exception $e) {
             $this->logger->error('Error fetching task for editing: ' . $e->getMessage());
+
             session()->flash('error', 'Error fetching task for editing.');
+
             return abort(500, 'Error fetching task');
         }
     }
@@ -219,33 +184,13 @@ class TaskController extends Controller
         try {
             DB::beginTransaction();
 
-
-            if (is_null($taskId)) {
-                abort(400, 'Invalid task ID');
-            }
-
-            $task = $this->taskService->getTaskById($taskId);
-
-            if (!$task) {
-                return abort(404, 'Task not found');
-            }
+            $task = $this->fetchAuthorizedTask($taskId);
 
             if (! Gate::allows('update', $task)) {
-                abort(403, 'Unauthorized');
+                abort(403, 'Unauthorized to update this task.');
             }
 
-            $task->title = $request->input("title");
-            $task->short_description = $request->input("short_description");
-            $task->long_description = $request->input("long_description");
-            $task->due_date = $request->input("due_date");
-            $task->priority = $request->input("priority");
-            $task->status_id = $request->input("status_id");
-            $task->status = $request->input("status");
-            $task->created_by = Auth::id();
-            $task->assigned_to = $request->input("assigned_to") ?? Auth::id() ;
-            $task->is_recurring = $request->input("is_recurring");
-            $task->recurring_pattern = $request->input("recurring_pattern");
-            $task->recurring_interval = $request->input("recurring_interval");
+            $this->updateTaskFromRequest($task, $request);
 
             $this->taskService->updateTask($task);
 
@@ -268,15 +213,7 @@ class TaskController extends Controller
         try {
             DB::beginTransaction();
 
-            if (is_null($taskId)) {
-                abort(400, 'Invalid task ID');
-            }
-
-            $task = $this->taskService->getTaskById($taskId);
-
-            if (!$task) {
-                return abort(404, 'Task not found');
-            }
+            $task = $this->fetchAuthorizedTask($taskId);
 
             if (! Gate::allows('delete', $task)) {
                 abort(403, 'Unauthorized');
@@ -302,6 +239,55 @@ class TaskController extends Controller
     // End Methods
 
     // Helpers
+    private function createTaskFromRequest(CreateTaskRequest $request): Task
+    {
+        return new Task([
+            'title' => $request->input('title'),
+            'short_description' => $request->input('short_description'),
+            'long_description' => $request->input('long_description'),
+            'due_date' => $request->input('due_date'),
+            'priority' => $request->input('priority'),
+            'status_id' => $request->input('status_id'),
+            'status' => $request->input('status'),
+            'created_by' => Auth::id(),
+            'assigned_to' => $request->input('assigned_to') ?? Auth::id(),
+            'is_recurring' => $request->input('is_recurring'),
+            "recurring_pattern" => $request->input("recurring_pattern"),
+            "recurring_interval" => $request->input("recurring_interval")
+          ]);
+    }
+
+    private function fetchAuthorizedTask(int $taskId): Task
+    {
+        if (is_null($taskId)) {
+            abort(400, 'Invalid task ID');
+        }
+
+        $task = $this->taskService->getTaskById($taskId);
+
+        if (!$task) {
+            return abort(404, 'Task not found');
+        }
+
+        return $task;
+    }
+
+    private function updateTaskFromRequest(Task &$task, UpdateTaskRequest $request): void
+    {
+        $task->title = $request->input("title");
+        $task->short_description = $request->input("short_description");
+        $task->long_description = $request->input("long_description");
+        $task->due_date = $request->input("due_date");
+        $task->priority = $request->input("priority");
+        $task->status_id = $request->input("status_id");
+        $task->status = $request->input("status");
+        $task->created_by = Auth::id();
+        $task->assigned_to = $request->input("assigned_to") ?? Auth::id() ;
+        $task->is_recurring = $request->input("is_recurring");
+        $task->recurring_pattern = $request->input("recurring_pattern");
+        $task->recurring_interval = $request->input("recurring_interval");
+    }
+
 
     // End Helpers
 }

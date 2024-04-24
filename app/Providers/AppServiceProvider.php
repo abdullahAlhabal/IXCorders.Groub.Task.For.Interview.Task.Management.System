@@ -13,6 +13,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->register(TaskServiceProvider::class);
         $this->app->register(UserServiceProvider::class);
+        $this->app->register(CommentServiceProvider::class);
+        $this->app->register(AttachmentServiceProvider::class);
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
+use App\Contracts\User\UserRepositoryInterface;
 use App\Contracts\User\UserServiceInterface;
-use App\Contracts\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
