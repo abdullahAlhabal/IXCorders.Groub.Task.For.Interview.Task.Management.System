@@ -26,7 +26,8 @@ return new class extends Migration
             $table->unsignedInteger('recurring_interval')->nullable();
             $table->timestamps();
 
-            $table->index(['user_id', 'short_description', 'due_date', 'created_by', 'assigned_to', 'recurring_pattern', 'status']);
+            $table->index(['due_date', 'created_by']);
+            $table->index(['assigned_to', 'recurring_pattern', 'status']);
         });
     }
 
