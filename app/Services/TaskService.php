@@ -55,6 +55,10 @@ class TaskService implements TaskServiceInterface
     {
         return $this->taskRepository->getAllTasksPaginated($perPage);
     }
+    public function searchTasks(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->taskRepository->searchTasks($searchTerm, $perPage);
+    }
     public function getAllTasksChunked(): void
     {
         Task::chunk(100, function ($tasks) {

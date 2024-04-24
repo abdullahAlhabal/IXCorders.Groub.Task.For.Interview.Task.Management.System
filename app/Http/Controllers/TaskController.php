@@ -6,9 +6,7 @@ use App\Contracts\Task\TaskServiceInterface;
 use App\Contracts\User\UserServiceInterface;
 use App\Models\Task;
 use App\Http\Requests\Web\Task\CreateTaskRequest;
-use App\Http\Requests\Web\Task\AssignTaskRequest ;
 use App\Http\Requests\Web\Task\UpdateTaskRequest;
-use App\Notifications\TaskAssignedNotification;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -38,14 +36,11 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         try {
-
-            // Dispatch(new FetchTasksJob(app(TaskService::class)));
-
             $perPage = $request->query('perPage', 10);
 
-            $tasks = $this->taskService->getAllTasksPaginated($perPage);
+            $searchTerm = $request->query('search') ;
 
-            $this->logger->info('Retrieved all tasks successfully');
+            $tasks = $this->taskService->searchTasks($searchTerm, $perPage);
 
             return view('tasks.index', compact('tasks'));
 

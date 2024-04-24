@@ -6,10 +6,11 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Scout\Searchable;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
 
     protected $fillable = [
@@ -63,6 +64,19 @@ class Task extends Model
     public function getFormattedDueDateAttribute()
     {
         return $this->due_date->format('M d, Y, g:i A');
+    }
+
+    public function toSearchableArray()
+    {
+        return [
+            'title'             => $this->title,
+            'short_description' => $this->short_description,
+            'due_date'          => $this->due_date,
+            'priority'          => $this->priority,
+            'status'            => $this->status,
+            'is_recurring'      => $this->is_recurring,
+            'recurring_pattern' => $this->recurring_pattern,
+        ];
     }
 
 }

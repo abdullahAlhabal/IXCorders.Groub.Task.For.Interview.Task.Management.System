@@ -15,7 +15,6 @@ interface TaskRepositoryInterface
     public function getTaskWithAttachments(int $taskId): ?Task;
 
     public function getTaskWithCommentsAndAttachments(int $taskId): ?Task;
-
     public function getAll(): Collection;
 
     public function paginate(int $perPage = 10): LengthAwarePaginator;
@@ -24,6 +23,7 @@ interface TaskRepositoryInterface
 
     public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator;
     public function getAllTasksPaginated(int $perPage = 10): LengthAwarePaginator;
+    public function searchTasks(string $searchTerm, int $perPage = 10): LengthAwarePaginator;
     public function where(string $column, $value): Collection;
 
     public function add(Task $task): void;
@@ -34,5 +34,3 @@ interface TaskRepositoryInterface
 
     public function save(Task $task): void;
 }
-
-

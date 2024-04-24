@@ -33,7 +33,6 @@ class TaskRepository implements TaskRepositoryInterface
     {
         return Task::paginate($perPage);
     }
-
     public function orderBy(string $column, string $direction = 'asc'): Collection
     {
         return Task::orderBy($column, $direction)->get();
@@ -45,6 +44,14 @@ class TaskRepository implements TaskRepositoryInterface
     public function getAllTasksPaginated(int $perPage = 10): LengthAwarePaginator
     {
         return Task::with('comments', 'attachments')->paginate($perPage);
+    }
+    public function searchTasks(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    {
+        if (empty($searchTerm)) {
+            return $this->getAllTasksPaginated($perPage);
+        }
+
+        return Task::search($searchTerm)->paginate($perPage);
     }
     public function where(string $column, $value): Collection
     {

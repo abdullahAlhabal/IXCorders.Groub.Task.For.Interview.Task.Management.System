@@ -19,6 +19,7 @@ interface TaskServiceInterface
     public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator;
     public function getAllTasksChunked(): void;
     public function getAllTasksPaginated(int $perPage = 10): LengthAwarePaginator;
+    public function searchTasks(string $searchTerm, int $perPage = 10): LengthAwarePaginator;
     public function where(string $column, $value): Collection;
     public function addTask(Task $task): void;
     public function updateTask(Task $task): void;
