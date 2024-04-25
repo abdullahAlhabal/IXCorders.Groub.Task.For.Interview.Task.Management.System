@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -44,38 +45,44 @@ class Task extends Model
     {
         return $this->hasMany(Comment::class);
     }
-
     public function attachments()
     {
         return $this->hasMany(Attachment::class);
     }
 
     // Custom methods
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->status === 'In Progress' && $this->due_date >= now();
     }
-
-    public function isCreatedByCurrentUser()
+    public function isRecurring(): bool
+    {
+        return $this->is_recurring;
+    }
+    public function isCreatedByCurrentUser(): bool
     {
         return $this->created_by === Auth::id();
     }
-
-    public function getFormattedDueDateAttribute()
+    public function scopeByRecurringPattern(Builder $query, string $pattern)
     {
-        return $this->due_date->format('M d, Y, g:i A');
+        return $query->where('recurring_pattern', $pattern);
+    }
+    public function scopeByPriority(Builder $query, string $priority)
+    {
+        return $query->where('priority', $priority);
+    }
+    public function scopeByStatus(Builder $query, string $status)
+    {
+        return $query->where('status', $status);
     }
 
+    // Search using Scout Package
     public function toSearchableArray()
     {
         return [
             'title'             => $this->title,
             'short_description' => $this->short_description,
-            'due_date'          => $this->due_date,
-            'priority'          => $this->priority,
-            'status'            => $this->status,
-            'is_recurring'      => $this->is_recurring,
-            'recurring_pattern' => $this->recurring_pattern,
+            'long_description'  => $this->long_description,
         ];
     }
 

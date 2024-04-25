@@ -18,4 +18,6 @@ interface AttachmentRepositoryInterface
     public function orderBy(string $column, string $direction = 'asc'): Collection;
     public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator;
     public function where(string $column, $value): Collection;
+    public function getAttachmentByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator;
 }
+

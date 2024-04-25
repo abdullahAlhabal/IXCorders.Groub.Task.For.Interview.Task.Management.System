@@ -49,11 +49,11 @@ class CommentRepository implements CommentRepositoryInterface
     {
         return Comment::orderBy($column, $direction)->paginate($perPage);
     }
-    public function getAllCommentsPaginated(int $perPage = 10): LengthAwarePaginator
+    public function getCommentsPaginated(int $perPage = 10): LengthAwarePaginator
     {
         return Comment::paginate($perPage);
     }
-    public function getAllCommentsByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator
+    public function getCommentsByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator
     {
         $query = Comment::query()->where('written_by', $userId);
         return $query->paginate($perPage);

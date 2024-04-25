@@ -56,4 +56,9 @@ class AttachmentRepository implements AttachmentRepositoryInterface
     {
         $attachment->save();
     }
+    public function getAttachmentByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        $query = Attachment::query()->where('attached_by', $userId);
+        return $query->paginate($perPage);
+    }
 }

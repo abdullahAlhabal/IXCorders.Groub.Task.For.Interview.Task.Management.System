@@ -18,6 +18,6 @@ interface CommentRepositoryInterface
     public function where(string $column, $value): Collection;
     public function paginate(int $perPage = 10): LengthAwarePaginator;
     public function paginateOrderedBy(string $column, string $direction = 'asc', int $perPage = 10): LengthAwarePaginator;
-    public function getAllCommentsPaginated(int $perPage = 10): LengthAwarePaginator;
-    public function getAllCommentsByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator;
+    public function getCommentsPaginated(int $perPage = 10): LengthAwarePaginator;
+    public function getCommentsByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator;
 }

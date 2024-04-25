@@ -48,4 +48,22 @@ class User extends Authenticatable
         'password' => 'hashed',
         'birth_date' => 'date',
     ];
+
+    // RelationShips
+    public function createdTasks()
+    {
+        return $this->hasMany(Task::class, 'created_by'); // Tasks where user is the creator
+    }
+    public function assignedTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to'); // Tasks where user is the assignee
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'written_by'); // Specify the foreign key on the comments table
+    }
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class, 'attached_by'); // Specify the foreign key on the attachments table
+    }
 }

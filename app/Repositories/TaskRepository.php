@@ -41,14 +41,68 @@ class TaskRepository implements TaskRepositoryInterface
     {
         return Task::orderBy($column, $direction)->paginate($perPage);
     }
-    public function getAllTasksPaginated(int $perPage = 10): LengthAwarePaginator
+    public function getTasksPaginated(int $perPage = 10): LengthAwarePaginator
     {
         return Task::with('comments', 'attachments')->paginate($perPage);
     }
-    public function searchTasks(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    public function getCreatedTasksByUser(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        return Task::where('created_by', $userId)
+                   ->with('comments', 'attachments')
+                   ->paginate($perPage);
+    }
+    public function getUserTasks(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        return Task::where('created_by', $userId)
+                   ->orWhere('assigned_to', $userId)
+                   ->with('comments', 'attachments')
+                   ->paginate($perPage);
+    }
+    public function searchUserCreatedTasks(int $userId, string $searchTerm, int $perPage = 10): LengthAwarePaginator
     {
         if (empty($searchTerm)) {
-            return $this->getAllTasksPaginated($perPage);
+            return $this->getCreatedTasksByUser($userId, $perPage);
+        }
+
+        $query = Task::where(function ($query) use ($userId, $searchTerm) {
+            $query->where(function ($subQuery) use ($userId) {
+                $subQuery->where('created_by', $userId);
+            })
+                  ->where(function ($subQuery) use ($searchTerm) {
+                      $subQuery->where('title', 'like', "%$searchTerm%")
+                               ->orWhere('short_description', 'like', "%$searchTerm%")
+                               ->orWhere('long_description', 'like', "%$searchTerm%");
+                  });
+        });
+
+        return $query->with('comments', 'attachments')
+                    ->paginate($perPage);
+    }
+    public function searchUserTasks(int $userId, string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    {
+        if (empty($searchTerm)) {
+            return $this->getUserTasks($userId, $perPage);
+        }
+
+        $query = Task::where(function ($query) use ($userId, $searchTerm) {
+            $query->where(function ($subQuery) use ($userId) {
+                $subQuery->where('created_by', $userId)
+                         ->orWhere('assigned_to', $userId);
+            })
+                  ->where(function ($subQuery) use ($searchTerm) {
+                      $subQuery->where('title', 'like', "%$searchTerm%")
+                               ->orWhere('short_description', 'like', "%$searchTerm%")
+                               ->orWhere('long_description', 'like', "%$searchTerm%");
+                  });
+        });
+
+        return $query->with('comments', 'attachments')
+                    ->paginate($perPage);
+    }
+    public function searchTasksScout(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    {
+        if (empty($searchTerm)) {
+            return $this->getTasksPaginated($perPage);
         }
 
         return Task::search($searchTerm)->paginate($perPage);
@@ -61,17 +115,14 @@ class TaskRepository implements TaskRepositoryInterface
     {
         $task->save();
     }
-
     public function update(Task $task): void
     {
         $task->save();
     }
-
     public function delete(Task $task): void
     {
         $task->delete();
     }
-
     public function save(Task $task): void
     {
         $task->save();

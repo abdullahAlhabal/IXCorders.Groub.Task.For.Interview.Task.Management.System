@@ -7,6 +7,7 @@ use App\Contracts\User\UserServiceInterface;
 use App\Models\Task;
 use App\Http\Requests\Web\Task\CreateTaskRequest;
 use App\Http\Requests\Web\Task\UpdateTaskRequest;
+use App\Notifications\TaskAssignedNotification;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,7 @@ class TaskController extends Controller
 
             $searchTerm = $request->query('search') ;
 
-            $tasks = $this->taskService->searchTasks($searchTerm, $perPage);
+            $tasks = $this->taskService->searchTasksScout($searchTerm, $perPage);
 
             return view('tasks.index', compact('tasks'));
 
@@ -75,7 +76,9 @@ class TaskController extends Controller
                 abort(403, 'Unauthorized');
             }
 
-            return view('tasks.show', compact($task));
+            $users = $this->userService->getAllUsers();
+
+            return view('tasks.show', compact($task, $users));
 
         } catch (\Exception $e) {
             $this->logger->error('Error fetching task details: ' . $e->getMessage());
@@ -107,6 +110,10 @@ class TaskController extends Controller
         $task = $this->createTaskFromRequest($request);
 
         $this->taskService->addTask($task);
+
+        if ($this->shouldNotifyUser($task)) {
+            $this->notifyUser($task);
+        }
 
         session()->flash('success', 'Task created successfully!');
 
@@ -251,7 +258,15 @@ class TaskController extends Controller
             "recurring_interval" => $request->input("recurring_interval")
           ]);
     }
-
+    private function shouldNotifyUser(Task $task): bool
+    {
+        return $task->created_by !== $task->assigned_to;
+    }
+    private function notifyUser(Task $task)
+    {
+        $assignedUser = $this->userService->getUserById($task->assigned_to);
+        $assignedUser->notify(new TaskAssignedNotification($task));
+    }
     private function fetchAuthorizedTask(int $taskId): Task
     {
         if (is_null($taskId)) {

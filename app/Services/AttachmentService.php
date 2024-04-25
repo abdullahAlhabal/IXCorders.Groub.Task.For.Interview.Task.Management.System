@@ -64,4 +64,10 @@ class AttachmentService implements AttachmentServicesInterface
     {
         $this->attachmentRepository->save($attachment);
     }
+
+    public function getAttachmentByUserPaginated(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->attachmentRepository->getAttachmentByUserPaginated($userId, $perPage);
+    }
+
 }

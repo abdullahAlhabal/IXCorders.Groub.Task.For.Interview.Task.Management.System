@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Contracts\Attachment\AttachmentRepositoryInterface;
 use App\Contracts\Attachment\AttachmentServicesInterface;
 use App\Repositories\AttachmentRepository;
-use App\Services\AttachmentServices;
+use App\Services\AttachmentService;
 use Illuminate\Support\ServiceProvider;
 
 class AttachmentServiceProvider extends ServiceProvider
@@ -18,7 +18,7 @@ class AttachmentServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(AttachmentRepositoryInterface::class, AttachmentRepository::class);
-        $this->app->bind(AttachmentServicesInterface::class, AttachmentServices::class);
+        $this->app->bind(AttachmentServicesInterface::class, AttachmentService::class);
     }
 
     /**

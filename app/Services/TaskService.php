@@ -41,7 +41,6 @@ class TaskService implements TaskServiceInterface
     {
         return $this->taskRepository->paginate($perPage);
     }
-
     public function orderBy(string $column, string $direction = 'asc'): Collection
     {
         return $this->taskRepository->orderBy($column, $direction);
@@ -51,13 +50,29 @@ class TaskService implements TaskServiceInterface
     {
         return $this->taskRepository->paginateOrderedBy($column, $direction, $perPage);
     }
-    public function getAllTasksPaginated(int $perPage = 10): LengthAwarePaginator
+    public function getTasksPaginated(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->taskRepository->getAllTasksPaginated($perPage);
+        return $this->taskRepository->getTasksPaginated($perPage);
     }
-    public function searchTasks(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    public function getCreatedTasksByUser(int $userId, int $perPage = 10): LengthAwarePaginator
     {
-        return $this->taskRepository->searchTasks($searchTerm, $perPage);
+        return $this->taskRepository->getCreatedTasksByUser($userId, $perPage);
+    }
+    public function getUserTasks(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->taskRepository->getUserTasks($userId, $perPage);
+    }
+    public function searchUserCreatedTasks(int $userId, string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->taskRepository->searchUserCreatedTasks($userId, $searchTerm, $perPage);
+    }
+    public function searchUserTasks(int $userId, string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->taskRepository->searchUserTasks($userId, $searchTerm, $perPage);
+    }
+    public function searchTasksScout(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->searchTasksScout($searchTerm, $perPage);
     }
     public function getAllTasksChunked(): void
     {
@@ -69,22 +84,18 @@ class TaskService implements TaskServiceInterface
     {
         return $this->taskRepository->where($column, $value);
     }
-
     public function addTask(Task $task): void
     {
         $this->taskRepository->add($task);
     }
-
     public function updateTask(Task $task): void
     {
         $this->taskRepository->update($task);
     }
-
     public function deleteTask(Task $task): void
     {
         $this->taskRepository->delete($task);
     }
-
     public function saveTask(Task $task): void
     {
         $this->taskRepository->save($task);
