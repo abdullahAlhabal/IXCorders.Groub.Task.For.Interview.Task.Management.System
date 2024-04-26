@@ -39,7 +39,14 @@ class TaskController extends Controller
         try {
             $perPage = $request->query('perPage', 10);
 
-            $searchTerm = $request->query('search') ;
+            // more readably
+            // $searchTerm = $request->query('search') ;
+            // if(empty($searchTerm)){
+            //     $searchTerm = "";
+            // }
+
+            // save a line of code
+            $searchTerm = empty($request->query('search')) ? "" : $request->query('search') ;
 
             $tasks = $this->taskService->searchTasksScout($searchTerm, $perPage);
 

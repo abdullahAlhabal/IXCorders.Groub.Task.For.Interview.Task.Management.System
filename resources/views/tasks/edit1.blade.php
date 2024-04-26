@@ -4,53 +4,12 @@
 
       <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
 
-        {{ __('Create Task') }}
+        {{ __('Update Task') }}
 
       </h2>
 
     </x-slot>
 
-    <div class="py-12">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <section>
-                        <header>
-                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                {{ __('Create Task') }}
-                            </h2>
-                    
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                {{ __('Ensure to add valid Information') }}
-                            </p>
-                        </header>
-
-                        <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data" class="mt-6 space-y-6">
-                        @csrf
-
-                        <div>
-                            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-                            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-                            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
-                        </div>
-                
-                        <div>
-                            <x-input-label for="update_password_password" :value="__('New Password')" />
-                            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-                            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
-                        </div>
-                        
-
-                        
-
-
-                        </form>
-                    </section>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    
 
     <div class="py-12">
 
@@ -70,15 +29,16 @@
 
               <div class="card-body">
 
-                <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('tasks.update', $task->id) }}" method="POST" enctype="multipart/form-data">
 
                   @csrf
+                  @method('PUT')
 
                   <div class="mb-3">
 
                     <label for="title" class="form-label">Title</label>
 
-                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required autofocus>
+                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ $task->title }}" required autofocus>
 
                     @error('title')
                       <span class="invalid-feedback" role="alert">
@@ -92,7 +52,7 @@
 
                     <label for="short_description" class="form-label">Short Description</label>
 
-                    <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3">{{ old('short_description') }}</textarea>
+                    <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3">{{ $task->short_description }}</textarea>
 
                     @error('short_description')
                       <span class="invalid-feedback" role="alert">
@@ -106,7 +66,7 @@
 
                     <label for="long_description" class="form-label">Long Description (Optional)</label>
 
-                    <textarea class="form-control @error('long_description') is-invalid @enderror" id="long_description" name="long_description" rows="5">{{ old('long_description') }}</textarea>
+                    <textarea class="form-control @error('long_description') is-invalid @enderror" id="long_description" name="long_description" rows="5">{{ $task->long_description }}</textarea>
 
                     @error('long_description')
                       <span class="invalid-feedback" role="alert">
@@ -120,7 +80,7 @@
 
                     <label for="due_date" class="form-label">Due Date</label>
 
-                    <input type="date" class="form-control @error('due_date') is-invalid @enderror" id="due_date" name="due_date" value="{{ old('due_date') }}" required>
+                    <input type="date" class="form-control @error('due_date') is-invalid @enderror" id="due_date" name="due_date" value="{{ $task->due_date }}" required>
 
                     @error('due_date')
                       <span class="invalid-feedback" role="alert">
@@ -138,11 +98,11 @@
 
                       <option value="">Select Priority</option>
 
-                      <option value="low" @if(old('priority') === 'low') selected @endif>Low</option>
+                      <option value="low" @if($task->priority === 'low') selected @endif>Low</option>
 
-                      <option value="medium" @if(old('priority') === 'medium') selected @endif>Medium</option>
+                      <option value="medium" @if($task->priority === 'medium') selected @endif>Medium</option>
 
-                      <option value="high" @if(old('priority') === 'high') selected @endif>High</option>
+                      <option value="high" @if($task->priority === 'high') selected @endif>High</option>
 
                     </select>
 
@@ -163,11 +123,11 @@
 
                       <option value="">Select status</option>
 
-                      <option value="To Do" @if(old('status') === 'To Do') selected @endif>To Do</option>
+                      <option value="To Do" @if($task->status === 'To Do') selected @endif>To Do</option>
 
-                      <option value="In Progress" @if(old('status') === 'In Progress') selected @endif>In Progress</option>
+                      <option value="In Progress" @if($task->status === 'In Progress') selected @endif>In Progress</option>
 
-                      <option value="Done" @if(old('status') === 'Done') selected @endif>Done</option>
+                      <option value="Done" @if($task->status === 'Done') selected @endif>Done</option>
 
                     </select>
 
@@ -180,7 +140,7 @@
                   </div>
 
                   <div class="mb-3 form-check">
-                    <input class="form-check-input" type="checkbox" value="1" id="is_recurring" name="is_recurring">
+                    <input class="form-check-input" type="checkbox" value="1" id="is_recurring" name="is_recurring" {{ $task->is_recurring ? 'checked' : '' }}>
                     <label class="form-check-label" for="is_recurring">
                       Is Recurring?
                     </label>
@@ -199,12 +159,12 @@
                         <option value="">Select User</option>
                             @forelse($users as $user)
                               <option value="{{ $user->id }}"
-                                @if(old('assigned_to') == $user->id) selected @endif>
+                                @if($task->assigned_to == $user->id) selected @endif>
                                 {{ $user->name }}
                               </option>
                             @empty
                             <option value="">no users found</option>
-                            @endforelse
+                            @endforeach
                     </select>
                     @error('assigned_to')
                       <span class="invalid-feedback" role="alert">
@@ -223,11 +183,11 @@
 
                       <option value="">Select status</option>
 
-                      <option value="daily" @if(old('recurring_pattern') === 'daily') selected @endif>daily</option>
+                      <option value="daily" @if( $task->recurring_pattern === 'daily') selected @endif>daily</option>
 
-                      <option value="weekly" @if(old('recurring_pattern') === 'weekly') selected @endif>weekly</option>
+                      <option value="weekly" @if( $task->recurring_pattern === 'weekly') selected @endif>weekly</option>
 
-                      <option value="monthly" @if(old('recurring_pattern') === 'monthly') selected @endif>monthly</option>
+                      <option value="monthly" @if( $task->recurring_pattern === 'monthly') selected @endif>monthly</option>
 
                     </select>
 
@@ -243,7 +203,7 @@
 
                     <label for="recurring_interval" class="form-label">Recurring Interval</label>
 
-                    <input type="number" class="form-control @error('recurring_interval') is-invalid @enderror" id="recurring_interval" name="recurring_interval" value="{{ old('recurring_interval') }}" required autofocus>
+                    <input type="number" class="form-control @error('recurring_interval') is-invalid @enderror" id="recurring_interval" name="recurring_interval" value="{{ $task->recurring_interval }}" required autofocus>
 
                     @error('recurring_interval')
                       <span class="invalid-feedback" role="alert">

@@ -70,9 +70,9 @@ class TaskService implements TaskServiceInterface
     {
         return $this->taskRepository->searchUserTasks($userId, $searchTerm, $perPage);
     }
-    public function searchTasksScout(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    public function searchTasksScout(string $searchTerm = "", int $perPage = 10): LengthAwarePaginator
     {
-        return $this->searchTasksScout($searchTerm, $perPage);
+        return $this->taskRepository->searchTasksScout($searchTerm, $perPage);
     }
     public function getAllTasksChunked(): void
     {

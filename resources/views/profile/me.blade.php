@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 text-gray-900 dark:text-gray-100">
             <div class="row">
                 <div class="col-md-4">
                     <div class="card">
@@ -16,9 +16,9 @@
                             <h5 class="card-title">{{ $user->name }}</h5>
                             <p class="card-text">
                                 Email: {{ $user->email }}<br>
-                                Name: {{ $user->first_name }} {{ $user->last_name }}<br>
-                                Birthday: {{ $user->birth_date->diffForHumans() }}<br>
-                                Gender: {{ $user->gender }}
+                                Name: {{ $user->first_name ?? "N/A" }} {{ $user->last_name ?? "N/A" }}<br>
+                                Birthday: {{ $user->birth_date ? $user->birth_date->diffForHumans() : "N/A" }}<br>
+                                Gender: {{ $user->gender ?? "N/A" }}
                             </p>
                         </div>
                     </div>
@@ -26,81 +26,83 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="accordion" id="profileAccordions">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="tasksAccordion">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTasks" aria-expanded="false" aria-controls="collapseTasks">
-                                    Tasks
-                                </button>
-                            </h2>
-                            <div id="collapseTasks" class="accordion-collapse collapse" aria-labelledby="tasksAccordion" data-bs-parent="#profileAccordions">
-                                <div class="accordion-body">
-                                    @forelse($tasks as $task)
-                                        <ul class="list-group">
-                                            @foreach ($tasks as $task)
-                                                <li class="list-group-item">
-                                                    <a href="{{ route('tasks.show', $task->id) }}">{{ $task->title }}</a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @empty
-                                        <p>No tasks found.</p>
-                                    @endforelse
-
-                                    @if ($tasks->count() > 0)
-                                      <div class="d-flex justify-content-center mt-4">
-                                        {{ $tasks->links() }}
-                                      </div>
-                                    @endif
-
+                    <ul class="flex border-b border-gray-200 dark:border-gray-700">
+                        <li class="mr-2">
+                            <a href="#tasks" class="inline-block px-4 py-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500">Tasks</a>
+                        </li>
+                        <li class="mr-2">
+                            <a href="#comments" class="inline-block px-4 py-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500">Comments</a>
+                        </li>
+                        <li class="mr-2">
+                            <a href="#attachments" class="inline-block px-4 py-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 focus:outline-none focus:border-blue-500 dark:focus:border-blue-500">Attachments</a>
+                        </li>
+                    </ul>
+                    <div class="mt-4">
+                        <div id="tasks" class="tab-content">
+                            @forelse($tasks as $task)
+                                <ul class="list-group">
+                                    @foreach ($tasks as $task)
+                                        <li class="list-group-item">
+                                            <a href="{{ route('tasks.show', $task->id) }}">{{ $task->title }}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @empty
+                                <div class="py-12">
+                                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                                            <div class="p-6 text-gray-900 dark:text-gray-100">
+                                                {{ __("No tasks found.") }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            @endforelse
+                            @if ($tasks->count() > 0)
+                                <div class="flex justify-center mt-4">
+                                    {{ $tasks->links() }}
+                                </div>
+                            @endif
                         </div>
-
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="commentsAccordion">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComments" aria-expanded="false" aria-controls="collapseComments">
-                                    Comments
-                                </button>
-                            </h2>
-                            <div id="collapseComments" class="accordion-collapse collapse" aria-labelledby="commentsAccordion" data-bs-parent="#profileAccordions">
-                                <div class="accordion-body">
-                                    @forelse($userComments as $comment)
-                                        <p>{{ $comment->content }}</p>
-                                    @empty
-                                        <p>No comments found.</p>
-                                    @endforelse
-
-                                    @if ($userComments->count() > 0)
-                                      <div class="d-flex justify-content-center mt-4">
-                                        {{ $userComments->links() }}
-                                      </div>
-                                    @endif
+                        <div id="comments" class="tab-content hidden">
+                            @forelse($userComments as $comment)
+                                <p>{{ $comment->content }}</p>
+                            @empty
+                                <div class="py-12">
+                                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                                            <div class="p-6 text-gray-900 dark:text-gray-100">
+                                                {{ __("No tasks found.") }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            @endforelse
+                            @if ($userComments->count() > 0)
+                                <div class="flex justify-center mt-4">
+                                    {{ $userComments->links() }}
+                                </div>
+                            @endif
                         </div>
-
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="attachmentsAccordion">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAttachments" aria-expanded="false" aria-controls="collapseAttachments">
-                                    Attachments
-                                </button>
-                            </h2>
-                            <div id="collapseAttachments" class="accordion-collapse collapse" aria-labelledby="attachmentsAccordion" data-bs-parent="#profileAccordions">
-                                <div class="accordion-body">
-                                    @forelse($userAttachments as $attachment)
-                                        <p>{{ $attachment->content }}</p>
-                                    @empty
-                                        <p>No attachments found.</p>
-                                    @endforelse
-
-                                    @if ($userAttachments->count() > 0)
-                                      <div class="d-flex justify-content-center mt-4">
-                                        {{ $userAttachments->links() }}
-                                      </div>
-                                    @endif
+                        <div id="attachments" class="tab-content hidden">
+                            @forelse($userAttachments as $attachments)
+                                <p>{{ $attachments->content }}</p>
+                            @empty
+                                <div class="py-12">
+                                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                                            <div class="p-6 text-gray-900 dark:text-gray-100">
+                                                {{ __("No tasks found.") }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            @endforelse
+                            @if ($userAttachments->count() > 0)
+                                <div class="flex justify-center mt-4">
+                                    {{ $userAttachments->links() }}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

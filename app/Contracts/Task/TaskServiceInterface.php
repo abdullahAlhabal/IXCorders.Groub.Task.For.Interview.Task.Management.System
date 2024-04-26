@@ -21,7 +21,7 @@ interface TaskServiceInterface
     public function getUserTasks(int $userId, int $perPage = 10): LengthAwarePaginator;
     public function searchUserCreatedTasks(int $userId, string $searchTerm, int $perPage = 10): LengthAwarePaginator;
     public function searchUserTasks(int $userId, string $searchTerm, int $perPage = 10): LengthAwarePaginator;
-    public function searchTasksScout(string $searchTerm, int $perPage = 10): LengthAwarePaginator;
+    public function searchTasksScout(string $searchTerm = "", int $perPage = 10): LengthAwarePaginator;
     public function getAllTasksChunked(): void;
     public function where(string $column, $value): Collection;
     public function addTask(Task $task): void;

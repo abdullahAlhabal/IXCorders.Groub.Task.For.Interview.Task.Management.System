@@ -99,7 +99,7 @@ class TaskRepository implements TaskRepositoryInterface
         return $query->with('comments', 'attachments')
                     ->paginate($perPage);
     }
-    public function searchTasksScout(string $searchTerm, int $perPage = 10): LengthAwarePaginator
+    public function searchTasksScout(string $searchTerm = "", int $perPage = 10): LengthAwarePaginator
     {
         if (empty($searchTerm)) {
             return $this->getTasksPaginated($perPage);

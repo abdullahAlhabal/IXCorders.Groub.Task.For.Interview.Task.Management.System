@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
 
         Task::truncate();
 
-        $total = 1000000;
+        // $total = 1000000;
+        $total = 1000;
         $batchSize = 1000;
 
         for ($i = 0; $i < $total; $i += $batchSize) {
