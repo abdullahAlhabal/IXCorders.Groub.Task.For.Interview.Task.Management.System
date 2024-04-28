@@ -17,10 +17,31 @@
         @csrf
         @method('patch')
 
+        {{--
+        email
+        first_name
+        last_name
+        birth_date
+        gender
+        profile_picture
+          --}}
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <x-input-label for="profile_image" :value="__('Profile Image')" />
+            <x-image src="{{ $user->profile_picture }}" alt="{{ $user->name }} Profile Picture" name="profile_picture" />
+            <x-file-upload name="profile_picture" />
+            <x-input-error class="mt-2" :messages="$errors->get('profile_picture')" />
+        </div>
+
+        <div>
+            <x-input-label for="first_name" :value="__('First Name')" />
+            <x-text-input id="first_name" name="first_name" type="text" class="mt-1 block w-full" :value="old('first_name', $user->first_name)" required autofocus autocomplete="first name" />
+            <x-input-error class="mt-2" :messages="$errors->get('first_name')" />
+        </div>
+
+        <div>
+            <x-input-label for="last_name" :value="__('Last Name')" />
+            <x-text-input id="last_name" name="last_name" type="text" class="mt-1 block w-full" :value="old('last_name', $user->last_name)" required  autocomplete="last name" />
+            <x-input-error class="mt-2" :messages="$errors->get('last_name')" />
         </div>
 
         <div>
@@ -46,6 +67,11 @@
                 </div>
             @endif
         </div>
+
+        <x-gender-input name="gender" />
+
+        <x-birth-date-input name="birth_date" />
+
 
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>

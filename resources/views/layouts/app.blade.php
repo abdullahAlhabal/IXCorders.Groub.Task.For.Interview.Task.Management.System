@@ -29,33 +29,53 @@
             @endif
 
             @if (session()->has('errors'))
-                <ul class="list-group">
-                  @foreach (session('errors')->all() as $error)
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                      {{ $error }}
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <ul class="list">
+                    <div class="py-12">
+                        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                            @foreach (session('errors')->all() as $error)
+                                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                                    <div class="max-w-xl">
+                                        <div class="text-sm text-red-600 dark:text-red-400 space-y-1">
+                                        {{ $error }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                  @endforeach
                 </ul>
             @endif
 
             @if (session('info'))
-                <div class="alert alert-info alert-dismissible fade show" role="alert">
-                  <strong>Info!</strong>
-                  {{ session('info') }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="py-12">
+                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                    <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                        <div class="max-w-xl">
+                            <div class="bg-blue-100 text-blue-700 p-2 rounded-md mb-2">
+                                <strong>Info!</strong>
+                                {{ session('info') }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
             @endif
 
             @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                  <strong>Success!</strong>
-                  {{ session('success') }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="py-12">
+                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                        <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                            <div class="max-w-xl">
+                                <div class="bg-green-100 text-green-700 p-2 rounded-md mb-2">
+                                    <strong>Success!</strong>
+                                    {{ session('success') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @endif
 
-            <!-- Page Content -->
             <main>
                 {{ $slot }}
             </main>

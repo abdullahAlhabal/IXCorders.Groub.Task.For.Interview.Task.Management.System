@@ -18,7 +18,7 @@
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                 {{ __('Create Task') }}
                             </h2>
-                    
+
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                                 {{ __('Ensure to add valid Information') }}
                             </p>
@@ -32,15 +32,15 @@
                             <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
                             <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
                         </div>
-                
+
                         <div>
                             <x-input-label for="update_password_password" :value="__('New Password')" />
                             <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
                             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
                         </div>
-                        
 
-                        
+
+
 
 
                         </form>
@@ -50,7 +50,7 @@
         </div>
     </div>
 
-    
+
 
     <div class="py-12">
 
@@ -78,7 +78,7 @@
 
                     <label for="title" class="form-label">Title</label>
 
-                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required autofocus>
+                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required >
 
                     @error('title')
                       <span class="invalid-feedback" role="alert">
@@ -243,7 +243,7 @@
 
                     <label for="recurring_interval" class="form-label">Recurring Interval</label>
 
-                    <input type="number" class="form-control @error('recurring_interval') is-invalid @enderror" id="recurring_interval" name="recurring_interval" value="{{ old('recurring_interval') }}" required autofocus>
+                    <input type="number" class="form-control @error('recurring_interval') is-invalid @enderror" id="recurring_interval" name="recurring_interval" value="{{ old('recurring_interval') }}" required >
 
                     @error('recurring_interval')
                       <span class="invalid-feedback" role="alert">
