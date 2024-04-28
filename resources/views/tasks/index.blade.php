@@ -12,73 +12,73 @@
 
 
     <div class="py-12 text-gray-900 dark:text-gray-100">
-
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-        @forelse ($tasks as $task)
-              <div class="py-12">
-                  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                      <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-    
-                      <div class="col">
-                        <div class="card">
-                          <div class="card-body">
-                            <h5 class="card-title">{{ $task->title }}</h5>
-                            <p class="card-text">{{ $task->short_description }}</p>
-                            <ul class="list-group list-group-flush">
-                              <li class="list-group-item">Due Date: {{ $task->due_date }}</li>
-                              <li class="list-group-item">Priority: {{ $task->priority }}</li>
-                              <li class="list-group-item">Status: {{ $task->status }}</li>
-                              <li class="list-group-item">
-                                Recurring: {{ $task->isRecurring() ? $task->recurring_pattern . ' (' . $task->recurring_interval . ')' : 'No' }}
-                              </li>
-                              <li class="list-group-item">
-                                Comments: {{ $task->comments->count() }}
-                              </li>
-                              <li class="list-group-item">
-                                Attachments: {{ $task->attachments->count() }}
-                              </li>
-                            </ul>
-                            <div class="d-flex justify-content-between mt-2">
-                              @if ($task->created_by === $task->assigned_to)
-                                <a href="{{ route('profile.show', $task->creator->id) }}" class="btn btn-primary btn-sm">Creator Profile</a>
-                              @else
-                                <a href="{{ route('profile.show', $task->creator->id) }}" class="btn btn-primary btn-sm">Creator Profile</a>
-                                <a href="{{ route('profile.show', $task->assignee->id) }}" class="btn btn-success btn-sm">Assignee Profile</a>
-                              @endif
-                              <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-warning btn-sm">Show Task</a>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+          @forelse ($tasks as $task)
+            <div class="py-12">
+              <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                  <div class="col">
+                    <div class="card">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                            <h5 class="text-xl font-semibold">{{ $task->title }}</h5>
+                            <p class="mt-2 text-gray-600">{{ $task->short_description }}</p>
+                            <div class="flex justify-between mt-4">
+                              <div>
+                                <p class="text-sm text-gray-500">
+                                  Due Date: {{ $task->due_date }} • Priority: {{ $task->priority }} • Status: {{ $task->status }}
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                  Recurring: {{ $task->isRecurring() ? $task->recurring_pattern . ' (' . $task->recurring_interval . ')' : 'No' }}
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                  Comments : {{ $task->comments->count() }}
+                                </p>
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                  Attachments: {{   $task->attachments->count() }}
+                                </p>
+                              </div>
+                              <div class="space-x-2">
+                                @if ($task->created_by === $task->assigned_to)
+                                  <a href="{{ route('profile.show', $task->creator->id) }}" class="px-3 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-700">Creator Profile</a>
+                                @else
+                                  <a href="{{ route('profile.show', $task->creator->id) }}" class="px-3 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-700">Creator Profile</a>
+                                  <a href="{{ route('profile.show', $task->assignee->id) }}" class="px-3 py-1 text-white bg-green-500 rounded-sm hover:bg-green-700">Assignee Profile</a>
+                                @endif
+                                <a href="{{ route('tasks.show', $task->id) }}" class="px-3 py-1 text-white bg-yellow-500 rounded-sm hover:bg-yellow-700">Show Task</a>
+                              </div>
                             </div>
                           </div>
                         </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          @empty
+            <div class="py-12">
+              <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                  <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("No tasks found.") }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          @endforelse
+          @if ($tasks->count() > 0)
+              <div class="py-12">
+                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                  <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                      <div class="flex justify-center mt-4">
+                          {{ $tasks->links() }}
                       </div>
                     </div>
                   </div>
-              </div>
-
-        @empty
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        {{ __("No tasks found.") }}
-                    </div>
                 </div>
-            </div>
+              </div>
+          @endif
         </div>
-
-        @endforelse
-
-
-        @if ($tasks->count() > 0)
-          <div class="d-flex justify-content-center mt-4">
-            {{ $tasks->links() }}
-          </div>
-        @endif
-
-
       </div>
-
-    </div>
 
   </x-app-layout>
