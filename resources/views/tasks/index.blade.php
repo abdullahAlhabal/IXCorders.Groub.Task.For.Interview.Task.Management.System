@@ -38,16 +38,28 @@
                                   Attachments: {{   $task->attachments->count() }}
                                 </p>
                               </div>
-                              <div class="space-x-2">
-                                @if ($task->created_by === $task->assigned_to)
-                                  <a href="{{ route('profile.show', $task->creator->id) }}" class="px-3 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-700">Creator Profile</a>
-                                @else
-                                  <a href="{{ route('profile.show', $task->creator->id) }}" class="px-3 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-700">Creator Profile</a>
-                                  <a href="{{ route('profile.show', $task->assignee->id) }}" class="px-3 py-1 text-white bg-green-500 rounded-sm hover:bg-green-700">Assignee Profile</a>
-                                @endif
-                                <a href="{{ route('tasks.show', $task->id) }}" class="px-3 py-1 text-white bg-yellow-500 rounded-sm hover:bg-yellow-700">Show Task</a>
-                              </div>
                             </div>
+                          </div>
+                          <div class="space-x-2">
+                            @if ($task->created_by === $task->assigned_to)
+                              <a href="{{ route('profile.show', $task->creator->id) }}" class="px-3 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-700">Creator Profile</a>
+                            @else
+                              <a href="{{ route('profile.show', $task->creator->id) }}" class="px-3 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-700">Creator Profile</a>
+                              <a href="{{ route('profile.show', $task->assignee->id) }}" class="px-3 py-1 text-white bg-green-500 rounded-sm hover:bg-green-700">Assignee Profile</a>
+                            @endif
+                          </div>
+                          <div class="space-x-2 block">
+                            @can('update', $task)
+                                <a href="{{ route('tasks.edit', ["task" => $task]) }}" class="px-3 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-700">Edit Task</a>
+                            @endcan
+                            @can('delete', $task)
+                                <form method="POST" action="{{ route('tasks.destroy', ["task" => $task]) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-3 py-1 text-white bg-red-500 rounded-sm hover:bg-red-700">Delete Task</button>
+                                </form>
+                            @endcan
+                            <a href="{{ route('tasks.show', ["task" => $task->id]) }}" class="px-3 py-1 text-white bg-yellow-500 rounded-sm hover:bg-yellow-700">Show Task</a>
                           </div>
                         </div>
                   </div>

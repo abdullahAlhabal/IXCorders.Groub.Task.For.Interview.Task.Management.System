@@ -2,28 +2,30 @@
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
+            {{ __('My Profile') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 text-gray-900 dark:text-gray-100">
-            
+
             <div class="py-12">
                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 text-gray-900 dark:text-gray-100">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-4 w-full md:w-1/3 px-4 mb-6">
                                     <div class="card">
-                                        <img src="{{ $user->profile_picture }}" class="card-img-top img-fluid" alt="Profile Picture">
+                                        <div class="rounded-lg shadow-md overflow-hidden">
+                                            <img src="{{ $user->profile_picture }}" class="card-img-top img-fluid w-full h-48 object-cover" alt="Profile Picture">
+                                        </div>
                                         <div class="card-body">
-                                            <h5 class="card-title">{{ $user->name }}</h5>
+                                            <h5 class="card-title text-xl font-bold">{{ $user->name }}</h5>
                                             <p class="card-text">
-                                                Email: {{ $user->email }}<br>
-                                                Name: {{ $user->first_name ?? "N/A" }} {{ $user->last_name ?? "N/A" }}<br>
-                                                Birthday: {{ $user->birth_date ? $user->birth_date->diffForHumans() : "N/A" }}<br>
-                                                Gender: {{ $user->gender ?? "N/A" }}
+                                                <span class="font-medium">Email:</span> {{ $user->email }}<br>
+                                                <span class="font-medium">Name:</span> {{ $user->first_name ?? "N/A" }} {{ $user->last_name ?? "N/A" }}<br>
+                                                <span class="font-medium">Birthday:</span> {{ $user->birth_date ? $user->birth_date->diffForHumans() : "N/A" }}<br>
+                                                <span class="font-medium">Gender:</span> {{ $user->gender ?? "N/A" }}
                                             </p>
                                         </div>
                                     </div>
@@ -39,6 +41,7 @@
                         <div id="tasks">
                             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                                 {{ __('Tasks') }}
+                                <p class="mt-2 text-gray-600"> Created : {{ $user->createdTasks->count() }} • Assigned : {{ $user->assignedTasks->count() }}</p>
                             </h2>
                             @forelse($tasks as $task)
                                 <ul class="list-group">
@@ -84,6 +87,7 @@
                         <div id="comments">
                             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                                 {{ __('Comments') }}
+                                <p class="mt-2 text-gray-600"> No : {{ $user->comments->count() }}</p>
                             </h2>
                             @forelse($userComments as $comment)
                                 <div class="py-12">
@@ -125,13 +129,14 @@
                         <div id="attachments">
                             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                                 {{ __('Attachments') }}
+                                <p class="mt-2 text-gray-600"> No : {{ $user->attachments->count() }}</p>
                             </h2>
                             @forelse($userAttachments as $attachment)
                                 <div class="py-12">
                                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                                             <div class="p-6 text-gray-900 dark:text-gray-100">
-                                                <img src="{{ asset('storage/' . $attachment->attachment_path) }}" alt="attachment" class="rounded-lg shadow-md">  <div class="flex justify-between mt-2">  <a href="{{ route('profile.show', $attachment->uploader->id) }}" class="btn btn-primary btn-sm px-3 py-1.5 text-center text-white bg-blue-500 hover:bg-blue-700 rounded-md"> Uploader Profile </a>  
+                                                <img src="{{ asset('storage/' . $attachment->attachment_path) }}" alt="attachment" class="rounded-lg shadow-md">  <div class="flex justify-between mt-2">  <a href="{{ route('profile.show', $attachment->uploader->id) }}" class="btn btn-primary btn-sm px-3 py-1.5 text-center text-white bg-blue-500 hover:bg-blue-700 rounded-md"> Uploader Profile </a>
                                             </div>
                                         </div>
                                     </div>

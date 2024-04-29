@@ -63,29 +63,15 @@ class TaskController extends Controller
         }
     }
 
-    public function show(int $taskId)
+    public function show(Task $task)
     {
         try {
 
-            if (is_null($taskId)) {
-                abort(400, 'Invalid task ID');
-            }
+            $task->load(["creator","assignee","comments","attachments"]);
 
-            $task = $this->taskService->getTaskWithCommentsAndAttachments($taskId);
-
-            if (!$task) {
-                session()->flash('error', 'Task not found.');
-                return abort(404, 'Task not found');
-            }
-
-            if (! Gate::allows('view', $task)) {
-                session()->flash('error', 'Unauthorized to view this task.');
-                abort(403, 'Unauthorized');
-            }
-
-            $users = $this->userService->getAllUsers();
-
-            return view('tasks.show', compact($task, $users));
+            return view('tasks.show', [
+                "task"  => $task
+            ]);
 
         } catch (\Exception $e) {
             $this->logger->error('Error fetching task details: ' . $e->getMessage());
@@ -158,22 +144,12 @@ class TaskController extends Controller
     //   }
     // }
 
-    public function edit(int $taskId)
+    public function edit(Task $task)
     {
         try {
-            if (is_null($taskId)) {
-                abort(400, 'Invalid task ID');
-            }
-
-            $task = $this->taskService->getTaskById($taskId);
-
-            if (!$task) {
-                session()->flash('error', 'Task not found.');
-                return abort(404, 'Task not found');
-            }
 
             if (! Gate::allows('update', $task)) {
-                abort(403, 'Unauthorized');
+                abort(403, 'Unauthorized to update this task.');
             }
 
             $users = $this->userService->getAllUsers();

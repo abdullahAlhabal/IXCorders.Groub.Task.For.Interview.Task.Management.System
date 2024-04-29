@@ -24,10 +24,10 @@ class DatabaseSeeder extends Seeder
         Task::truncate();
 
         // $total = 1000000;
-        $total = 1000;
+        $total = 1001;
         $batchSize = 1000;
 
-        for ($i = 0; $i < $total; $i += $batchSize) {
+        for ($i = 0; $i <= $total; $i += $batchSize) {
             $tasks = Task::factory($batchSize)->make();
             Task::insert($tasks->toArray());
         }
