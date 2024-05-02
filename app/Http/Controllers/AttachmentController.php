@@ -9,7 +9,8 @@ use App\Http\Requests\Web\Attachment\UpdateAttachmentRequest;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AttachmentController extends Controller
 {    // Members
@@ -34,19 +35,14 @@ class AttachmentController extends Controller
 
             $perPage = $request->query('perPage', 10);
 
-            // Get all attachments
             $attachmentss = $this->attachmentService->getAllAttachments();
 
-            // Log successful retrieval (optional)
             $this->logger->info('Retrieved all attachments successfully');
 
-            // Render a view with the attachments
             return view('attachments.index', ['attachments' => $attachmentss]);
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
             $this->logger->error('Error fetching attachments: ' . $e->getMessage());
 
-            // Return an error view (customize as needed)
             return view('errors.500');
         }
     }
@@ -54,68 +50,62 @@ class AttachmentController extends Controller
     public function show(int $attachmentId)
     {
         try {
-            // Get a specific attachments by ID
-            $attachments = $this->attachmentService->getattachmentById($attachmentId); // I found that if i change the name to findattachmentsById() is more clarity. no worries for now
+            $attachments = $this->attachmentService->getattachmentById($attachmentId);
 
             if (!$attachments) {
-                // attachments not found
                 return abort(404, 'attachments not found');
             }
 
-            // Map the retrieved data to a view model (if needed)
-            // For example:
-            // $model = new RecurringattachmentsModel($attachments);
 
-            // Return a view with the attachments details
             return view('attachments.show', ['attachments' => $attachments]);
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
-            // For example:
-            // Log::error('Error fetching attachments details: ' . $e->getMessage());
             $this->logger->error('Error fetching attachments details: ' . $e->getMessage());
 
-            // Return an error view
-            return view('errors.500'); // Customize the error view as needed
+            return view('errors.500');
+        }
+    }
+
+    public function create($taskId)
+    {
+        try {
+            $this->authorize('create', Attachment::class);
+            return view('attachments.create', compact("taskId"));
+
+        } catch (\Exception $e) {
+
+            $this->logger->error('Error : ' . $e->getMessage());
+            session()->flash('error', 'Error .');
+            return abort(500, 'Error ');
         }
     }
 
     public function store(StoreattachmentRequest $request)
     {
         try {
-            // Start a database transaction
             DB::beginTransaction();
 
-            // Create a new attachments from the request data
-            $attachments = new attachment([
-                'title' => $request->input("title"),
-                'short_description' => $request->input("short_description"),
-                'long_description' => $request->input("long_description"),
-                'due_date' => $request->input("due_date"),
-                'priority' => $request->input("priority"),
-                'status_id' => $request->input("status_id"),
-                'status' => $request->input("status"),
-                'created_by' => $request->input("created_by"),
-                'assigned_to' => $request->input("assigned_to"),
-                'is_recurring' => $request->input("is_recurring"),
-                'recurring_attachments_id' => $request->input("recurring_attachments_id"),
+            $file = $request->file('attachment_path');
+
+            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+
+            $file->storeAs('attachments', $fileName, 'public');
+
+            $attachments = new Attachment([
+              'attachment_path' => "storage/attachments/$fileName",
+              'attached_by' => Auth::id(),
+              'task_id' => $request->input("task_id"),
             ]);
 
-            // Add the attachments to the database
             $this->attachmentService->addattachment($attachments);
 
-            // Commit the transaction
             DB::commit();
 
-            // Redirect to the index page (or any other appropriate page)
             return redirect()->route('attachments.index');
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
             $this->logger->error('Error creating attachments: ' . $e->getMessage());
 
-            // Roll back the transaction
             DB::rollBack();
 
-            // Return an error view
             return view('errors.500'); // Customize the error view as needed
         }
     }
@@ -123,46 +113,37 @@ class AttachmentController extends Controller
     public function update(UpdateattachmentRequest $request, int $attachmentId)
     {
         try {
-            // Start a database transaction
             DB::beginTransaction();
 
-            // Get a specific attachments by ID
-            $attachments = $this->attachmentService->getattachmentById($attachmentId);
+            $attachments = $this->attachmentService->getAttachmentById($attachmentId);
 
             if (!$attachments) {
-                // attachments not found
-                return abort(404, 'attachments not found');
+              return abort(404, 'Attachment not found');
             }
 
-            // Update attachments properties from the request data
-            $attachments->title = $request->input("title");
-            $attachments->short_description = $request->input("short_description");
-            $attachments->long_description = $request->input("long_description");
-            $attachments->due_date = $request->input("due_date");
-            $attachments->priority = $request->input("priority");
-            $attachments->status_id = $request->input("status_id");
-            $attachments->status = $request->input("status");
-            $attachments->created_by = $request->input("created_by");
-            $attachments->assigned_to = $request->input("assigned_to");
-            $attachments->is_recurring = $request->input("is_recurring");
-            $attachments->recurring_attachments_id = $request->input("recurring_attachments_id");
+            $file = $request->file('attachment_path');
 
-            // Save the updated attachments
-            $this->attachmentService->updateattachment($attachments);
+            if (!$file) {
+                $attachments->update($request->all());
+            } else {
+              $this->deleteAttachmentFile($attachments->attachment_path);
 
-            // Commit the transaction
+              $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+              $file->storeAs('attachments', $fileName, 'public');
+
+              $attachments->attachment_path = "storage/attachments/$fileName";
+            }
+
+            $this->attachmentService->updateAttachment($attachments);
+
             DB::commit();
 
-            // Redirect to the index page (or any other appropriate page)
             return redirect()->route('attachments.index');
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
             $this->logger->error('Error updating attachments: ' . $e->getMessage());
 
-            // Roll back the transaction
             DB::rollBack();
 
-            // Return an error view
             return view('errors.500'); // Customize the error view as needed
         }
     }
@@ -170,33 +151,22 @@ class AttachmentController extends Controller
     public function destroy(int $attachmentId)
     {
         try {
-            // Start a database transaction
             DB::beginTransaction();
 
-            // Get a specific attachments by ID
             $attachments = $this->attachmentService->getattachmentById($attachmentId);
 
             if (!$attachments) {
-                // attachments not found
                 return abort(404, 'attachments not found');
             }
-
-            // Delete the attachments
             $this->attachmentService->deleteattachment($attachments);
 
-            // Commit the transaction
             DB::commit();
-
-            // Redirect to the index page (or any other appropriate page)
             return redirect()->route('attachments.index');
         } catch (\Exception $e) {
-            // Handle exceptions (e.g., log, notify, etc.)
             $this->logger->error('Error deleting attachments: ' . $e->getMessage());
 
-            // Roll back the transaction
             DB::rollBack();
 
-            // Return an error view
             return view('errors.500'); // Customize the error view as needed
         }
     }
@@ -204,6 +174,13 @@ class AttachmentController extends Controller
     // End Methods
 
     // Helpers
+
+    private function deleteAttachmentFile(string $filePath): void
+    {
+      if (Storage::disk('public')->exists($filePath)) {
+        Storage::disk('public')->delete($filePath);
+      }
+    }
 
     // End Helpers
 }

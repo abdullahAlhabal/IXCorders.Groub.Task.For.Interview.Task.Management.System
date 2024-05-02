@@ -60,7 +60,8 @@
                                 </form>
                             @endcan
                             <a href="{{ route('tasks.show', ["task" => $task->id]) }}" class="px-3 py-1 text-white bg-yellow-500 rounded-sm hover:bg-yellow-700">Show Task</a>
-                          </div>
+                            <a href="{{ route('tasks.comments.create', ["taskId" => $task->id]) }}" class="px-3 py-1 text-white bg-yellow-500 rounded-sm hover:bg-yellow-700">Add comment</a>
+                            {{-- <a href="{{ route('tasks.comments.create', ["task" => $task->id]) }}" class="px-3 py-1 text-white bg-yellow-500 rounded-sm hover:bg-yellow-700">Add attachment</a> --}}
                         </div>
                   </div>
                 </div>
@@ -93,4 +94,5 @@
         </div>
       </div>
 
-  </x-app-layout>
+
+</x-app-layout>

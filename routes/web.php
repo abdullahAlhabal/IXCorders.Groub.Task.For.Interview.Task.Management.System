@@ -49,15 +49,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
         Route::prefix("/{taskId}/comments")->group(function () {
+            Route::get('/create', [CommentController::class, 'create'])->name('tasks.comments.create');
+            Route::get('/{comment}/edit', [CommentController::class, 'edit'])->name('tasks.comments.edit');
             Route::post('/', [CommentController::class, 'store'])->name('tasks.comments.store');
             Route::put('/{comment}', [CommentController::class, 'update'])->name('tasks.comments.update');
             Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('tasks.comments.destroy');
         });
 
         Route::prefix("/{taskId}/attachments")->group(function () {
+            Route::get('/create', [AttachmentController::class, 'create'])->name('tasks.attachments.create');
+            Route::get('/{attachment}/edit', [AttachmentController::class, 'edit'])->name('tasks.attachments.edit');
             Route::post('/', [AttachmentController::class, 'store'])->name('tasks.attachments.store');
-            Route::put('/{attachment}', [CommentController::class, 'update'])->name('tasks.attachments.update');
-            Route::delete('/{attachment}', [CommentController::class, 'destroy'])->name('tasks.attachments.destroy');
+            Route::put('/{attachment}', [AttachmentController::class, 'update'])->name('tasks.attachments.update');
+            Route::delete('/{attachment}', [AttachmentController::class, 'destroy'])->name('tasks.attachments.destroy');
         });
 
     });

@@ -25,15 +25,15 @@ class UpdateAttachmentRequest extends FormRequest
 
         if ($method === "PUT") {
             return [
-                'attachment_path' => 'required|string',
-                'attached_by' => 'required|exists:users,id',
-                'task_id' => 'required|exists:tasks,id'
+                'attachment_path' => 'required|mimes:jpg,jpeg,png,pdf,docx,xlsx',
+                // 'attached_by' => 'required|exists:users,id',  // we can use Auth::id() to get the id
+                // 'task_id' => 'required|exists:tasks,id', // we can't edit the task id , only we can edit the attachment path
             ];
         } elseif ($method === "PATCH") {
             return [
-                'attachment_path' => 'sometimes|required|string',
-                'attached_by' => 'sometimes|required|exists:users,id',
-                'task_id' => 'sometimes|required|exists:tasks,id'
+                'attachment_path' => 'sometimes|mimes:jpg,jpeg,png,pdf,docx,xlsx',
+                // 'attached_by' => 'sometimes|required|exists:users,id',  // we can use Auth::id() to get the id
+                // 'task_id' => 'sometimes|required|exists:tasks,id', // we can't edit the task id , only we can edit the attachment path
             ];
         }
     }

@@ -28,13 +28,13 @@ class TaskPolicy
       return $user->id === $task->created_by || $user->id === $task->assigned_to;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-      return true;
-    }
+    // /**
+    //  * Determine whether the user can create models.
+    //  */
+    // public function create(User $user): bool
+    // {
+    //   return true;
+    // }
 
     /**
      * Determine whether the user can assign to the target user.

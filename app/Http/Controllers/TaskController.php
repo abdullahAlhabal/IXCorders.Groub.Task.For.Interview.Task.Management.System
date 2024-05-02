@@ -98,6 +98,8 @@ class TaskController extends Controller
     public function store(CreateTaskRequest $request)
     {
       try {
+        $this->authorize('create', Task::class);
+
         DB::beginTransaction();
 
         $task = $this->createTaskFromRequest($request);

@@ -24,9 +24,9 @@
                             </p>
                         </header>
 
-                        <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data" class="mt-6 space-y-6">
+                        <form action="{{ route('tasks.store') }}" method="POST" class="mt-6 space-y-6">
                         @csrf
-
+                        @method("POST")
                         <div>
                             <x-input-label for="title" :value="__('Title')" />
                             <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" autocomplete="title" value="{{ old('title') }}" required/>
@@ -160,7 +160,7 @@
 
                             <label for="recurring_pattern" class="form-label">Recurring pattern</label>
 
-                            <select class="form-select @error('recurring_pattern') is-invalid @enderror border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" id="recurring_pattern" name="recurring_pattern" required>
+                            <select class="form-select @error('recurring_pattern') is-invalid @enderror border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" id="recurring_pattern" name="recurring_pattern">
                                 {{-- $table->enum('recurring_pattern', ['daily', 'weekly', 'monthly'])->nullable(); --}}
 
                               <option value="">Select status</option>
@@ -185,7 +185,7 @@
 
                             <label for="recurring_interval" class="form-label">Recurring Interval</label>
 
-                            <input type="number" class="form-control @error('recurring_interval') is-invalid @enderror border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" id="recurring_interval" name="recurring_interval" value="{{ old('recurring_interval') }}" required >
+                            <input type="number" class="form-control @error('recurring_interval') is-invalid @enderror border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" id="recurring_interval" name="recurring_interval" value="{{ old('recurring_interval') }}" >
 
                             @error('recurring_interval')
                               <span class="invalid-feedback" role="alert">

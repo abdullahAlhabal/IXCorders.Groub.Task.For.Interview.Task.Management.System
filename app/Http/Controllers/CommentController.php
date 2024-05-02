@@ -72,6 +72,21 @@ class CommentController extends Controller
     //     }
     // }
 
+    public function create($taskId)
+    {
+        try {
+            $this->authorize('create', Comment::class);
+            return view('comments.create', compact("taskId"));
+
+        } catch (\Exception $e) {
+
+            $this->logger->error('Error : ' . $e->getMessage());
+            session()->flash('error', 'Error .');
+            return abort(500, 'Error ');
+        }
+    }
+
+
     public function store(StoreCommentRequest $request)
     {
         try {
@@ -79,7 +94,7 @@ class CommentController extends Controller
 
             $comments = new Comment([
                 'comment' => $request->input('comment'),
-                'written_by' => $request->input('written_by'),
+                'written_by' => Auth::id(),
                 'task_id' => $request->input('task_id'),
             ]);
 
@@ -108,10 +123,7 @@ class CommentController extends Controller
                 return abort(404, 'comments not found');
             }
 
-
             $comment->comment = $request->input('comment');
-            $comment->written_by = $request->input('written_by');
-            $comment->task_id = $request->input('task_id');
 
             $this->commentService->updateComment($comment);
 

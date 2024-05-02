@@ -17,7 +17,13 @@
                                 <div class="col-md-4 w-full md:w-1/3 px-4 mb-6">
                                     <div class="card">
                                         <div class="rounded-lg shadow-md overflow-hidden">
-                                            <img src="{{ $user->profile_picture }}" class="card-img-top img-fluid w-full h-48 object-cover" alt="Profile Picture">
+                                            @if($user->profile_picture)
+                                                <img src="{{ $user->profile_picture }}" class="card-img-top img-fluid w-full h-48 object-cover" alt="Profile Picture">
+                                            @else
+                                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                                    {{ __("No profile Picture")}}
+                                                </p>
+                                            @endif
                                         </div>
                                         <div class="card-body">
                                             <h5 class="card-title text-xl font-bold">{{ $user->name }}</h5>

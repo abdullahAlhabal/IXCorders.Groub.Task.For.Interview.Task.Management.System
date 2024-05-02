@@ -26,14 +26,14 @@ class UpdateCommentRequest extends FormRequest
         if ($method === "PUT") {
             return [
                 "comment" => "required|string",
-                "written_by" => "required|exists:users,id",
-                "task_id" => "required|exists:tasks,id"
+                // "written_by" => "required|exists:users,id", // are static not updated
+                // "task_id" => "required|exists:tasks,id"  // are static not updated
             ];
         } elseif ($method === "PATCH") {
             return [
                 "comment" => "sometimes|required|string",
-                "written_by" => "sometimes|required|exists:users,id",
-                "task_id" => "sometimes|required|exists:tasks,id"
+                // "written_by" => "sometimes|required|exists:users,id", // are static not updated
+                // "task_id" => "sometimes|required|exists:tasks,id" // are static not updated
             ];
         }
     }

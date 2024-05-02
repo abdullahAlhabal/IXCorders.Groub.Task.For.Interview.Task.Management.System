@@ -23,7 +23,7 @@ class StoreCommentRequest extends FormRequest
     {
         return [
             "comment" => "required|string",
-            "written_by" => "required|exists:users,id",
+            // "written_by" => "required|exists:users,id",   // the current user , we can get it but Auth::id()
             "task_id" => "required|exists:tasks,id"
         ];
     }

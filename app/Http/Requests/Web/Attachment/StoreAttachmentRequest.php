@@ -22,8 +22,8 @@ class StoreAttachmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachment_path' => 'required|string',
-            'attached_by' => 'required|exists:users,id',
+            'attachment_path' => 'required|mimes:jpg,jpeg,png,pdf,docx,xlsx',
+            // 'attached_by' => 'required|exists:users,id', // we can use Auth::id() to get the id
             'task_id' => 'required|exists:tasks,id'
         ];
     }
